@@ -18,3 +18,6 @@ spring:
     properties:
       hibernate:
         "[format_sql]": true
+
+cors:
+  allowed-origin: ${CORS_ALLOWED_ORIGIN}
