@@ -8,20 +8,28 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.api.global.config.CorsProperties;
+import com.api.global.security.jwt.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 
+ * @author lee
+ * @version 1.0
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     
     private final CorsProperties corsProperties;
+    private final JwtFilter jwtFilter;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,9 +41,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/ds/**","/api/auth/**").permitAll()
                 .anyRequest().authenticated()
-            );
+            ).addFilterBefore(jwtFilter,
+                    UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
