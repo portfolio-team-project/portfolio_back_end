@@ -12,7 +12,7 @@ Jenkins를 이용해 CI/CD를 구성하여 홈 서버에 자동 배포하는 것
 - Application: Spring Boot 3.5
 - Container: Docker
 - CI/CD: Jenkins
-- Server: Home Server (Ubuntu or Windows/Linux)
+- Server: Home Server (Ubuntu 22.04.5 LTS)
 
 ---
 
