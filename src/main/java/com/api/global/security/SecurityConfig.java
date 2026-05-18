@@ -44,7 +44,19 @@ public class SecurityConfig {
                 .requestMatchers("/api/ds/**","/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             ).addFilterBefore(jwtFilter,
-                    UsernamePasswordAuthenticationFilter.class);
+                    UsernamePasswordAuthenticationFilter.class)
+            // CSP 추가 부분
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives(
+                        "default-src 'self'; " +
+                        "script-src 'self'; " +
+                        "style-src 'self' 'unsafe-inline'; " +
+                        "img-src 'self' data:; " +
+                        "connect-src 'self'"
+                    )
+                )
+            );
 
         return http.build();
     }
