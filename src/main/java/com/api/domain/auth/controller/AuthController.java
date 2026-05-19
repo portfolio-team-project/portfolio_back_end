@@ -1,11 +1,15 @@
 package com.api.domain.auth.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.domain.auth.dto.AuthRequest;
+import com.api.domain.auth.dto.AuthResponse;
 import com.api.domain.auth.dto.RefreshRequest;
+import com.api.domain.auth.service.AuthService;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
 
@@ -18,6 +22,7 @@ public class AuthController {
 	
 	private final JwtProvider jwtProvider;
 	private final RedisService redisService;
+	private final AuthService authService;
 	
 	@PostMapping("/refresh")
 	public void refresh(@RequestBody RefreshRequest request) {
@@ -62,5 +67,11 @@ public class AuthController {
 		/*
 		 * return new LoginResponse( newAccessToken, newRefreshToken );
 		 */
-	} 
+	}
+	
+	@PostMapping("/search")
+	public AuthResponse authSearch(@RequestBody AuthRequest request) {
+		
+		return authService.findByCode(request.getAuthCode());
+	}
 }
