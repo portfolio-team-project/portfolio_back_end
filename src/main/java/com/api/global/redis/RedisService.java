@@ -2,7 +2,7 @@ package com.api.global.redis;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisService {
 	
-	private final RedisTemplate<String, String> redisTemplate;
+	private final StringRedisTemplate redisTemplate;
 	
 	/*
 	 * refresh 토큰 저장
