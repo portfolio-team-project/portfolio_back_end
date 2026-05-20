@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.api.global.config.CorsProperties;
+import com.api.global.security.handler.CustomAccessDeniedHandler;
+import com.api.global.security.handler.CustomAuthenticationEntryPoint;
 import com.api.global.security.jwt.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -27,11 +30,14 @@ import lombok.RequiredArgsConstructor;
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     
     private final CorsProperties corsProperties;
     private final JwtFilter jwtFilter;
+    private final CustomAccessDeniedHandler deniedHandler;
+    private final CustomAuthenticationEntryPoint entryPoint;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,6 +51,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/ds/**","/api/auth/**").permitAll()
                 .anyRequest().authenticated()
+            ).exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(entryPoint)
+                    .accessDeniedHandler(deniedHandler)
             ).addFilterBefore(jwtFilter,
                     UsernamePasswordAuthenticationFilter.class)
             // CSP 추가 부분

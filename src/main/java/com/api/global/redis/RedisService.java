@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisService {
 	
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 	
 	/*
 	 * refresh 토큰 저장
@@ -20,7 +20,7 @@ public class RedisService {
 		/*
 		 * 7일간 보관 후 자동 삭제
 		 * */
-		redisTemplate.opsForValue().set(username, refreshToken, 7, TimeUnit.DAYS);
+		redisTemplate.opsForValue().set("RT:"+username, refreshToken, 7, TimeUnit.DAYS);
 	}
 	
 	/*
@@ -28,7 +28,7 @@ public class RedisService {
 	 * */
 	public String getRefreshToken(String username) {
 		
-		return (String) redisTemplate.opsForValue().get(username);
+		return (String) redisTemplate.opsForValue().get("RT:"+username);
 	}
 	
 	/*
@@ -36,7 +36,7 @@ public class RedisService {
 	 * */
 	public void deleteRefreshToken(String username) {
 
-	    redisTemplate.delete(username);
+	    redisTemplate.delete("RT:"+username);
 	}
 	
 	

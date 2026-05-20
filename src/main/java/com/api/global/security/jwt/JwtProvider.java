@@ -8,7 +8,9 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 /**
@@ -31,9 +33,11 @@ public class JwtProvider {
     }
 	
     //토큰 생성 1시간
-    public String createToken(String username) {
+    public String createToken(String username, String role) {
     	return Jwts.builder()
                    .subject(username)
+                   .claim("type", "access")
+                   .claim("role",role)
                    .issuedAt(new Date())
                    .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                    .signWith(getSigningKey())
@@ -41,9 +45,11 @@ public class JwtProvider {
     }
     
     //refresh 토큰 생성 Redis용 7일
-    public String createRefreshToken(String username) {
+    public String createRefreshToken(String username, String role) {
     	return Jwts.builder()
                 .subject(username)
+                .claim("type","refresh")
+                .claim("role",role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
                 .signWith(getSigningKey())
@@ -65,9 +71,27 @@ public class JwtProvider {
 
             return true;
 
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (SecurityException e) {
+            return false;
+        } catch (MalformedJwtException e) {
+            return false;
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    /*
+     * role 조회
+     * */
+    public String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
     
     /*

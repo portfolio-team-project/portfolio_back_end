@@ -3,6 +3,8 @@ package com.api.global.security.jwt;
 import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -41,18 +43,26 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 // JWT에서 username 추출
                 String username = jwtProvider.getUsername(token);
-
+                
+                String role = jwtProvider.getRole(token);
+                
+                List<GrantedAuthority> authorities = (role != null && !role.isBlank())
+                        ? List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                        : List.of();
+                
                 // 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                List.of()
+                                authorities
                         );
 
                 // SecurityContext에 등록
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authentication);
+                }
             }
         }
 

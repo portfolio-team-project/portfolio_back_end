@@ -42,6 +42,9 @@ public class AuthController {
 	    String savedRefreshToken =
 	            redisService.getRefreshToken(username);
 	    
+	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
+	    String authToken = "";
+	    
 	    // Redis 값 비교
 	    if (
 	        savedRefreshToken == null
@@ -52,11 +55,11 @@ public class AuthController {
 	    
 	    // 새 access token 발급
 	    String newAccessToken =
-	            jwtProvider.createToken(username);
+	            jwtProvider.createToken(username,authToken);
 
 	    // 새 refresh token 발급 (선택)
 	    String newRefreshToken =
-	            jwtProvider.createRefreshToken(username);
+	            jwtProvider.createRefreshToken(username,authToken);
 
 	    // Redis 갱신
 	    redisService.saveRefreshToken(
