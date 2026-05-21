@@ -40,17 +40,21 @@ pipeline {
         stage('Run New Container') {
             steps {
             	withCredentials([file(credentialsId: 'env_credential', variable: 'ENV_FILE')]) {
-	               sh """
-		                set -e
-		
-		                docker run -d \
-		                    --env-file "$ENV_FILE" \
-		                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-		                    --name ${CONTAINER_NAME} \
-		                    -p ${PORT}:80 \
-		                    ${IMAGE_NAME}:latest
-		            """
-                }
+				    sh """
+				        set -e
+				
+				        CONTAINER_NAME='${CONTAINER_NAME}'
+				        PORT='${PORT}'
+				        IMAGE_NAME='${IMAGE_NAME}'
+				
+				        docker run -d \
+				            --env-file "\$ENV_FILE" \
+				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+				            --name \$CONTAINER_NAME \
+				            -p \$PORT:8080 \
+				            \$IMAGE_NAME:latest
+				    """
+				}
             }
         }
         
@@ -61,7 +65,7 @@ pipeline {
 
                     sleep 15
 
-                    curl -f http://localhost:${PORT} || exit 1
+                    curl -f http://localhost:$PORT || exit 1
                 '''
             }
         }
@@ -78,17 +82,21 @@ pipeline {
             withCredentials([file(credentialsId: 'env_credential', variable: 'ENV_FILE')]) {
 	            sh """
 	                echo "Rollback start..."
+	                
+	                CONTAINER_NAME='${CONTAINER_NAME}'
+			        PORT='${PORT}'
+			        IMAGE_NAME='${IMAGE_NAME}'
 	
-	                docker stop ${CONTAINER_NAME} || true
-	                docker rm ${CONTAINER_NAME} || true
-	
-	                if docker image inspect ${IMAGE_NAME}:backup > /dev/null 2>&1; then
-	                    docker run -d \
-	                    --env-file "$ENV_FILE" \
-	                    --name ${CONTAINER_NAME} \
-	                    -p ${PORT}:80 \
-	                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-	                    ${IMAGE_NAME}:backup
+	                docker stop \$CONTAINER_NAME || true
+	                docker rm \$CONTAINER_NAME || true
+	                
+	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
+	                	docker run -d \
+			            --env-file "\$ENV_FILE" \
+			            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+			            --name \$CONTAINER_NAME \
+			            -p \$PORT:8080 \
+	                    \$IMAGE_NAME:backup
 	
 	                    echo "Rollback completed"
 	                else
