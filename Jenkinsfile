@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                 	chmod +x gradlew
-                	./gradlew clean build
+                	./gradlew clean build --no-daemon
                 '''
             }
         }
@@ -41,6 +41,7 @@ pipeline {
             steps {
                 sh """
                     docker run -d \
+                    --env-file /home/ubuntu/env/.env \
                     -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
                     --name ${CONTAINER_NAME} \
                     -p ${PORT}:80 \
