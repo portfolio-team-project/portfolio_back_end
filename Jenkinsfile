@@ -39,14 +39,18 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                sh """
-                    docker run -d \
-                    --env-file /home/ubuntu/env/.env \
-                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-                    --name ${CONTAINER_NAME} \
-                    -p ${PORT}:80 \
-                    ${IMAGE_NAME}:latest
-                """
+            	withCredentials([file(credentialsId: 'env_credential', variable: 'ENV_FILE')]) {
+	               sh """
+		                set -e
+		
+		                docker run -d \
+		                    --env-file "$ENV_FILE" \
+		                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+		                    --name ${CONTAINER_NAME} \
+		                    -p ${PORT}:80 \
+		                    ${IMAGE_NAME}:latest
+		            """
+                }
             }
         }
         
@@ -71,24 +75,27 @@ pipeline {
         failure {
             echo 'Deploy failed'
             
-            sh '''
-                echo "Rollback start..."
-
-                docker stop ${CONTAINER_NAME} || true
-                docker rm ${CONTAINER_NAME} || true
-
-                if docker image inspect ${IMAGE_NAME}:backup > /dev/null 2>&1; then
-                    docker run -d \
-                    --name ${CONTAINER_NAME} \
-                    -p ${PORT}:80 \
-                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-                    ${IMAGE_NAME}:backup
-
-                    echo "Rollback completed"
-                else
-                    echo "No backup image found"
-                fi
-            '''
+            withCredentials([file(credentialsId: 'env_credential', variable: 'ENV_FILE')]) {
+	            sh """
+	                echo "Rollback start..."
+	
+	                docker stop ${CONTAINER_NAME} || true
+	                docker rm ${CONTAINER_NAME} || true
+	
+	                if docker image inspect ${IMAGE_NAME}:backup > /dev/null 2>&1; then
+	                    docker run -d \
+	                    --env-file "$ENV_FILE" \
+	                    --name ${CONTAINER_NAME} \
+	                    -p ${PORT}:80 \
+	                    -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+	                    ${IMAGE_NAME}:backup
+	
+	                    echo "Rollback completed"
+	                else
+	                    echo "No backup image found"
+	                fi
+	            """
+            }
         }
     }
 }
