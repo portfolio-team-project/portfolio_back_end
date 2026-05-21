@@ -8,14 +8,6 @@ pipeline {
     }
 
     stages {
-
-        stage('Checkout') {
-            steps {
-				        git url: 'https://github.com/portfolio-team-project/portfolio_back_end.git',
-				            branch: 'main'
-				    }
-        }
-
         stage('Build') {
             steps {
                 sh '''
