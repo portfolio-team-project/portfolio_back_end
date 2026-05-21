@@ -6,6 +6,8 @@ server:
   port: 80
 
 spring:
+  application:
+    name: portfolio_project
   config:
     import: optional:file:src/.env[.properties]
   datasource:
