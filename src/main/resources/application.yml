@@ -15,6 +15,9 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: ${DB_DRIVER}
+    hikari:
+      initialization-fail-timeout: 0
+      connection-timeout: 30000
   jpa:
     hibernate:
       ddl-auto: update

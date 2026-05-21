@@ -63,7 +63,7 @@ pipeline {
                 sh '''
                     echo "Waiting for application start..."
 
-                    sleep 15
+                    sleep 20
 
                     curl -f http://localhost:$PORT || exit 1
                 '''
