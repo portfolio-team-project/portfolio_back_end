@@ -63,9 +63,19 @@ pipeline {
                 sh '''
                     echo "Waiting for application start..."
 
-                    sleep 20
-
-                    curl -f http://localhost:$PORT || exit 1
+                    for i in $(seq 1 30); do
+					  echo "health check attempt $i"
+					
+					  if curl -sf http://localhost:$PORT; then
+					    echo "APP is up!"
+					    exit 0
+					  fi
+					
+					  sleep 5
+					done
+					
+					echo "APP failed to start"
+					exit 1
                 '''
             }
         }
