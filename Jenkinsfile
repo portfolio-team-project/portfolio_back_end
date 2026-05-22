@@ -67,7 +67,7 @@ pipeline {
 		            for i in $(seq 1 30); do
 		                echo "health check attempt $i"
 		
-		                RESPONSE=$(curl -s http://localhost:$PORT/health)
+		                RESPONSE=$(curl -s http://localhost:$PORT/health || true)
 		
 		                echo "response: $RESPONSE"
 		
