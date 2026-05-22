@@ -4,7 +4,6 @@ pipeline {
     environment {
         IMAGE_NAME = "myapp"
         CONTAINER_NAME = "myapp"
-        PORT = "8081"
     }
 
     stages {
@@ -44,7 +43,6 @@ pipeline {
 				        set -e
 				
 				        CONTAINER_NAME='${CONTAINER_NAME}'
-				        PORT='${PORT}'
 				        IMAGE_NAME='${IMAGE_NAME}'
 				
 				        docker run -d \
@@ -101,7 +99,6 @@ pipeline {
 	                echo "Rollback start..."
 	                
 	                CONTAINER_NAME='${CONTAINER_NAME}'
-			        PORT='${PORT}'
 			        IMAGE_NAME='${IMAGE_NAME}'
 	
 	                docker stop \$CONTAINER_NAME || true
