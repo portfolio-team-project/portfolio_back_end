@@ -62,22 +62,26 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    echo "Waiting for application start..."
-
-                    for i in $(seq 1 60); do
-					  echo "health check attempt $i"
-					
-					  if curl -sf http://localhost:$PORT/health; then
-					    echo "APP is up!"
-					    exit 0
-					  fi
-					
-					  sleep 5
-					done
-					
-					echo "APP failed to start"
-					exit 1
-                '''
+		            echo "Waiting for application start..."
+		
+		            for i in $(seq 1 30); do
+		                echo "health check attempt $i"
+		
+		                RESPONSE=$(curl -s http://localhost:$PORT/health)
+		
+		                echo "response: $RESPONSE"
+		
+		                if [ "$RESPONSE" = "ok" ]; then
+		                    echo "APP is up!"
+		                    exit 0
+		                fi
+		
+		                sleep 5
+		            done
+		
+		            echo "APP failed to start"
+		            exit 1
+		        '''
             }
         }
     }
