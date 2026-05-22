@@ -103,7 +103,7 @@ pipeline {
 			        IMAGE_NAME='${IMAGE_NAME}'
 	
 	                docker stop \$CONTAINER_NAME || true
-	                docker rm -f $CONTAINER_NAME || true
+	                docker rm -f \$CONTAINER_NAME || true
 	                
 	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
 	                	docker run -d \
