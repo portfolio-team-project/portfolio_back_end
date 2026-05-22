@@ -8,6 +8,6 @@ server:
 spring:
   profiles:
     active:
-    - dev
+    - ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: portfolio_project

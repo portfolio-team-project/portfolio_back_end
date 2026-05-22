@@ -2,7 +2,7 @@ spring:
     config:
         import: optional:file:src/.env[.properties]
     datasource:
-        url: ${DB_URL}
+        url: ${DB_URL_PROD}
         username: ${DB_USERNAME_PROD}
         password: ${DB_PASSWORD_PROD}
         driver-class-name: ${DB_DRIVER_PROD}
@@ -27,7 +27,3 @@ cors:
 
 jwt:
     secret: ${JWT_SECRET}
-
-logging:
-  level:
-    com.api: DEBUG

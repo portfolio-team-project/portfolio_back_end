@@ -49,6 +49,7 @@ pipeline {
 				
 				        docker run -d \
 				        	-p 8081:8081 \
+				        	-e SPRING_PROFILES_ACTIVE=prod \
 				            --env-file "\$ENV_FILE" \
 				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
 				            --name \$CONTAINER_NAME \
@@ -63,7 +64,7 @@ pipeline {
                 sh '''
                     echo "Waiting for application start..."
 
-                    for i in $(seq 1 30); do
+                    for i in $(seq 1 60); do
 					  echo "health check attempt $i"
 					
 					  if curl -sf http://localhost:$PORT; then
@@ -98,11 +99,12 @@ pipeline {
 			        IMAGE_NAME='${IMAGE_NAME}'
 	
 	                docker stop \$CONTAINER_NAME || true
-	                docker rm \$CONTAINER_NAME || true
+	                docker rm -f $CONTAINER_NAME || true
 	                
 	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
 	                	docker run -d \
 	                	-p 8081:8081 \
+	                	-e SPRING_PROFILES_ACTIVE=prod \
 			            --env-file "\$ENV_FILE" \
 			            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
 			            --name \$CONTAINER_NAME \
