@@ -67,7 +67,7 @@ pipeline {
                     for i in $(seq 1 60); do
 					  echo "health check attempt $i"
 					
-					  if curl -sf http://localhost:$PORT; then
+					  if curl -sf http://localhost:$PORT/health; then
 					    echo "APP is up!"
 					    exit 0
 					  fi
