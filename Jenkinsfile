@@ -95,30 +95,34 @@ pipeline {
             echo 'Deploy failed'
             
             withCredentials([file(credentialsId: 'env_credential', variable: 'ENV_FILE')]) {
-	            sh """
-	                echo "Rollback start..."
-	                
-	                CONTAINER_NAME='${CONTAINER_NAME}'
+			    sh """
+			        echo "Rollback start..."
+			
+			        CONTAINER_NAME='${CONTAINER_NAME}'
 			        IMAGE_NAME='${IMAGE_NAME}'
-	
-	                docker stop \$CONTAINER_NAME || true
-	                docker rm -f \$CONTAINER_NAME || true
-	                
-	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
-	                	docker run -d \
-	                	--network host \
-	                	-e SPRING_PROFILES_ACTIVE=prod \
-			            --env-file "\$ENV_FILE" \
-			            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-			            --name \$CONTAINER_NAME \
-	                    \$IMAGE_NAME:backup
-	
-	                    echo "Rollback completed"
-	                else
-	                    echo "No backup image found"
-	                fi
-	            """
-            }
+			
+			        docker stop \$CONTAINER_NAME || true
+			        docker rm -f \$CONTAINER_NAME || true
+			
+			        if docker image inspect \$IMAGE_NAME:backup > /dev/null 2>&1; then
+			
+			            docker tag \$IMAGE_NAME:backup \$IMAGE_NAME:latest
+			
+			            docker run -d \
+			                --network host \
+			                -e SPRING_PROFILES_ACTIVE=prod \
+			                --env-file \$ENV_FILE \
+			                -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+			                --name \$CONTAINER_NAME \
+			                \$IMAGE_NAME:latest
+			
+			            echo "Rollback completed"
+			        else
+			            echo "No backup image found"
+			            exit 1
+			        fi
+			    """
+			}
         }
     }
 }
