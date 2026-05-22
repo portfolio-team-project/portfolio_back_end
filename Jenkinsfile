@@ -48,7 +48,7 @@ pipeline {
 				        IMAGE_NAME='${IMAGE_NAME}'
 				
 				        docker run -d \
-				        	-p 8081:8081 \
+				        	--network host \
 				        	-e SPRING_PROFILES_ACTIVE=prod \
 				            --env-file "\$ENV_FILE" \
 				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
@@ -103,7 +103,7 @@ pipeline {
 	                
 	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
 	                	docker run -d \
-	                	-p 8081:8081 \
+	                	--network host \
 	                	-e SPRING_PROFILES_ACTIVE=prod \
 			            --env-file "\$ENV_FILE" \
 			            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
