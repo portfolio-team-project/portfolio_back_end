@@ -48,7 +48,7 @@ pipeline {
 				        IMAGE_NAME='${IMAGE_NAME}'
 				
 				        docker run -d \
-				        	--network host \
+				        	-p 8081:8081 \
 				            --env-file "\$ENV_FILE" \
 				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
 				            --name \$CONTAINER_NAME \
@@ -102,7 +102,7 @@ pipeline {
 	                
 	                if docker image inspect $IMAGE_NAME:backup > /dev/null 2>&1; then
 	                	docker run -d \
-	                	--network host \
+	                	-p 8081:8081 \
 			            --env-file "\$ENV_FILE" \
 			            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
 			            --name \$CONTAINER_NAME \

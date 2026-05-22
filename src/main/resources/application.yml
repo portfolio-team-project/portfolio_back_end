@@ -35,7 +35,3 @@ cors:
 
 jwt:
   secret: ${JWT_SECRET}
-  
-logging:
-  file:
-    path: /var/was_home/logs
