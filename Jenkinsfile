@@ -67,7 +67,9 @@ pipeline {
 		            for i in $(seq 1 30); do
 		                echo "health check attempt $i"
 		
-		                RESPONSE=$(curl -s http://host.docker.internal:8081/health | tr -d '\\r\\n' || true)
+		                RESPONSE=$(docker exec myapp \
+		                    curl -s http://localhost:8081/health \
+		                    | tr -d '\\r\\n' || true)
 		
 		                echo "response: $RESPONSE"
 		
