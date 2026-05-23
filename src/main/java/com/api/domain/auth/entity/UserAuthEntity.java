@@ -2,6 +2,8 @@ package com.api.domain.auth.entity;
 
 import java.time.LocalDateTime;
 
+import com.api.domain.base.Member.entity.MemberEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +33,10 @@ public class UserAuthEntity {
 	@ManyToOne
 	@JoinColumn(name="auth_code")
 	private AuthEntity auth;
+	
+	@ManyToOne
+	@JoinColumn(name="user_id")
+	private MemberEntity userId;
 	
 	@Column(name = "user_nm", length = 10)
 	private String userNm;
