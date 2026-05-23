@@ -123,7 +123,7 @@ pipeline {
 			            for i in $(seq 1 30); do
 			                echo "health check attempt $i"
 			
-			                RESPONSE=$(docker exec $CONTAINER_NAME \
+			                RESPONSE=$(docker exec \$CONTAINER_NAME \
 			                    curl -s http://localhost:8081/health \
 			                    | tr -d '\\r\\n' || true)
 			
