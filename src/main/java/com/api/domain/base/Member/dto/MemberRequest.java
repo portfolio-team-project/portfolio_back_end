@@ -1,5 +1,6 @@
 package com.api.domain.base.Member.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 public class MemberRequest {
 	
 	//유저 아이디
+	@NotBlank(message="아이디는 필수값입니다.")
 	private String userId;
 	//비밀번호
 	private String password;
