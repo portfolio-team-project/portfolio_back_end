@@ -50,7 +50,7 @@ public class SecurityConfig {
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/ds/**",
-                		         "/api/auth/**",
+                		         "/api/**",
                 		         "/health").permitAll()
                 .anyRequest().authenticated()
             ).exceptionHandling(ex -> ex
