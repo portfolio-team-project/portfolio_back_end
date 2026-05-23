@@ -46,6 +46,7 @@ pipeline {
 				        IMAGE_NAME='${IMAGE_NAME}'
 				
 				        docker run -d \
+				            --restart \
 				        	--network host \
 				        	-e SPRING_PROFILES_ACTIVE=prod \
 				            --env-file "\$ENV_FILE" \
@@ -107,31 +108,29 @@ pipeline {
 			        if docker image inspect \$IMAGE_NAME:backup > /dev/null 2>&1; then
 			
 			            docker tag \$IMAGE_NAME:backup \$IMAGE_NAME:latest
-			            
-			            docker run -d \
-			                --network host \
-			                -e SPRING_PROFILES_ACTIVE=prod \
-			                --env-file \$ENV_FILE \
-			                -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
-			                --name \$CONTAINER_NAME \
+			
+			            docker run -d \\
+			                --restart \\
+			                --network host \\
+			                -e SPRING_PROFILES_ACTIVE=prod \\
+			                --env-file \$ENV_FILE \\
+			                -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \\
+			                --name \$CONTAINER_NAME \\
 			                \$IMAGE_NAME:latest
 			
 			            echo "Rollback completed"
-			            
-			            echo "Waiting for application start..."
-		
-			            for i in $(seq 1 30); do
-			                echo "health check attempt $i"
 			
-			                RESPONSE=$(docker exec $CONTAINER_NAME \
-			                    curl -s http://localhost:8081/health \
+			            for i in \$(seq 1 30); do
+			                echo "health check attempt \$i"
+			
+			                RESPONSE=\$(docker exec \$CONTAINER_NAME \\
+			                    curl -s http://localhost:8081/health \\
 			                    | tr -d '\\r\\n' || true)
 			
-			                echo "response: $RESPONSE"
+			                echo "response: \$RESPONSE"
 			
-			                if [ "$RESPONSE" = "ok" ]; then
+			                if [ "\$RESPONSE" = "ok" ]; then
 			                    echo "APP is up!"
-			                    
 			                    exit 0
 			                fi
 			
@@ -140,9 +139,9 @@ pipeline {
 			
 			            echo "APP failed to start"
 			            exit 1
-			        else
-			            echo "No backup image found"
 			            
+			        else
+			            echo "No backup found"
 			            exit 1
 			        fi
 			    """
