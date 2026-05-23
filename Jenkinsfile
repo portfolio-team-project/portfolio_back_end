@@ -46,7 +46,7 @@ pipeline {
 				        IMAGE_NAME='${IMAGE_NAME}'
 				
 				        docker run -d \
-				            --restart \
+				            --restart unless-stopped \
 				        	--network host \
 				        	-e SPRING_PROFILES_ACTIVE=prod \
 				            --env-file "\$ENV_FILE" \
@@ -110,7 +110,7 @@ pipeline {
 			            docker tag \$IMAGE_NAME:backup \$IMAGE_NAME:latest
 			
 			            docker run -d \\
-			                --restart \\
+			                --restart unless-stopped \\
 			                --network host \\
 			                -e SPRING_PROFILES_ACTIVE=prod \\
 			                --env-file \$ENV_FILE \\
