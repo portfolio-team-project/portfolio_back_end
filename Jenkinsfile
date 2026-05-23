@@ -19,7 +19,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh """
-		                if docker image inspect ${IMAGE_NAME}:latest > /dev/null 2>&1; then
+		              if docker image inspect ${IMAGE_NAME}:latest > /dev/null 2>&1; then
 	                    docker image tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:backup
 	                  fi
 	                    docker build -f dockerfile_was -t ${IMAGE_NAME}:latest .
@@ -65,7 +65,7 @@ pipeline {
 		            for i in $(seq 1 30); do
 		                echo "health check attempt $i"
 		
-		                RESPONSE=$(docker exec myapp \
+		                RESPONSE=$(docker exec "$CONTAINER_NAME" \
 		                    curl -s http://localhost:8081/health \
 		                    | tr -d '\\r\\n' || true)
 		
@@ -107,7 +107,7 @@ pipeline {
 			        if docker image inspect \$IMAGE_NAME:backup > /dev/null 2>&1; then
 			
 			            docker tag \$IMAGE_NAME:backup \$IMAGE_NAME:latest
-			
+			            
 			            docker run -d \
 			                --network host \
 			                -e SPRING_PROFILES_ACTIVE=prod \
@@ -117,8 +117,32 @@ pipeline {
 			                \$IMAGE_NAME:latest
 			
 			            echo "Rollback completed"
+			            
+			            echo "Waiting for application start..."
+		
+			            for i in $(seq 1 30); do
+			                echo "health check attempt $i"
+			
+			                RESPONSE=$(docker exec $CONTAINER_NAME \
+			                    curl -s http://localhost:8081/health \
+			                    | tr -d '\\r\\n' || true)
+			
+			                echo "response: $RESPONSE"
+			
+			                if [ "$RESPONSE" = "ok" ]; then
+			                    echo "APP is up!"
+			                    
+			                    exit 0
+			                fi
+			
+			                sleep 5
+			            done
+			
+			            echo "APP failed to start"
+			            exit 1
 			        else
 			            echo "No backup image found"
+			            
 			            exit 1
 			        fi
 			    """
