@@ -1,8 +1,9 @@
 package com.api.domain.auth.service;
 
-import com.api.domain.auth.dto.AuthResponse;
+import com.api.domain.auth.entity.UserAuthEntity;
+import com.api.domain.base.Member.entity.MemberEntity;
 
 public interface AuthService {
 	
-	AuthResponse findByCode(String AuthCode);
+	UserAuthEntity findByUserId(MemberEntity member);
 }

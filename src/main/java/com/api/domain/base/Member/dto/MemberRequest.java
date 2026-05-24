@@ -12,6 +12,7 @@ public class MemberRequest {
 	@NotBlank(message="아이디는 필수값입니다.")
 	private String userId;
 	//비밀번호
+	@NotBlank(message="비밀번호는 필수값입니다.")
 	private String password;
 	//직급
 	private String rank;

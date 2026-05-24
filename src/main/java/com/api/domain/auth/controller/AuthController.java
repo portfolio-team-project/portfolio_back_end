@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.domain.auth.dto.AuthRequest;
 import com.api.domain.auth.dto.AuthResponse;
 import com.api.domain.auth.dto.RefreshRequest;
-import com.api.domain.auth.service.AuthService;
+import com.api.domain.base.Member.entity.MemberEntity;
+import com.api.domain.base.Member.service.MemberService;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
 
@@ -22,10 +22,10 @@ public class AuthController {
 	
 	private final JwtProvider jwtProvider;
 	private final RedisService redisService;
-	private final AuthService authService;
+	private final MemberService memberService;
 	
 	@PostMapping("/refresh")
-	public void refresh(@RequestBody RefreshRequest request) {
+	public AuthResponse refresh(@RequestBody RefreshRequest request) {
 		
 		String refreshToken = request.getRefreshToken();
 		
@@ -43,7 +43,8 @@ public class AuthController {
 	            redisService.getRefreshToken(username);
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
-	    String authToken = "";
+	    MemberEntity member = memberService.findByUserId(username);
+	    String authToken = memberService.getRole(member);
 	    
 	    // Redis 값 비교
 	    if (
@@ -59,7 +60,7 @@ public class AuthController {
 
 	    // 새 refresh token 발급 (선택)
 	    String newRefreshToken =
-	            jwtProvider.createRefreshToken(username,authToken);
+	            jwtProvider.createRefreshToken(username);
 
 	    // Redis 갱신
 	    redisService.saveRefreshToken(
@@ -67,14 +68,8 @@ public class AuthController {
 	            newRefreshToken
 	    );
 	    
-		/*
-		 * return new LoginResponse( newAccessToken, newRefreshToken );
-		 */
+		
+		return new AuthResponse( newAccessToken, newRefreshToken );
 	}
 	
-	@PostMapping("/search")
-	public AuthResponse authSearch(@RequestBody AuthRequest request) {
-		
-		return authService.findByCode(request.getAuthCode());
-	}
 }

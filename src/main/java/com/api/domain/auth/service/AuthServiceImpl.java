@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 
 import com.api.domain.auth.dto.AuthResponse;
 import com.api.domain.auth.entity.AuthEntity;
+import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.AuthRepository;
+import com.api.domain.auth.repository.UserAuthRepository;
+import com.api.domain.base.Member.entity.MemberEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,16 +15,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
 	
-	private final AuthRepository authRepository;
+	private final UserAuthRepository userAuthRepository;
 
 	@Override
-	public AuthResponse findByCode(String AuthCode) {
+	public UserAuthEntity findByUserId(MemberEntity member) {
 		
-		AuthEntity auth = authRepository.findById(AuthCode).orElse(null);
+		UserAuthEntity userAuth = userAuthRepository.findByUserId(member).orElse(null);
 		
-		return AuthResponse.builder()
-				           .authNm(auth.getAuthNm())
-				           .build();
+		return userAuth;
 	}
 
 }

@@ -1,5 +1,12 @@
 package com.api.domain.base.Login.dto;
 
-public class LoginResponse {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
+public class LoginResponse {
+	
+	private String accessToken;
+	
 }
