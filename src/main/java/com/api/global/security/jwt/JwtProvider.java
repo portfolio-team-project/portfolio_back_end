@@ -33,9 +33,9 @@ public class JwtProvider {
     }
 	
     //토큰 생성 1시간
-    public String createToken(String userId, String role) {
+    public String createToken(String uuid, String role) {
     	return Jwts.builder()
-                   .subject(userId)
+                   .subject(uuid)
                    .claim("type", "access")
                    .claim("role",role)
                    .issuedAt(new Date())
@@ -45,9 +45,9 @@ public class JwtProvider {
     }
     
     //refresh 토큰 생성 Redis용 7일
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String uuid) {
     	return Jwts.builder()
-                .subject(userId)
+                .subject(uuid)
                 .claim("type","refresh")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
@@ -96,7 +96,7 @@ public class JwtProvider {
     /*
      * payload 안에 있는 user 값 반환
      * */
-    public String getUsername(String token) {
+    public String getUuid(String token) {
 
         return Jwts.parser()
                    .verifyWith(getSigningKey())

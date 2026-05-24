@@ -23,7 +23,7 @@ public class MemberEntity {
 	private String userId;
 	
 	@Column(name="uuid")
-	private Long uuid;
+	private String uuid;
 	
 	@Column(name="rank", length = 10)
 	private String rank;

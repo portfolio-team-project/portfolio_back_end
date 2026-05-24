@@ -34,11 +34,11 @@ public class LoginController {
 		
 		String isRole = memberService.getRole(member);
 
-	    String accessToken = jwtProvider.createToken(member.getUserId(),isRole);
-	    String refreshToken = jwtProvider.createRefreshToken(member.getUserId());
+	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
+	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
 
 	    // Redis 저장
-	    redisService.saveRefreshToken(member.getUserId(), refreshToken);
+	    redisService.saveRefreshToken(member.getUuid(), refreshToken);
 
 	    // HttpOnly Cookie 생성
 	    Cookie cookie = new Cookie("refreshToken", refreshToken);

@@ -6,5 +6,5 @@ public interface MemberService {
 	boolean existsByUserId(String userId);
 	MemberEntity login(String userId, String password);
 	String getRole(MemberEntity member);
-	MemberEntity findByUserId(String userId);
+	MemberEntity findByUuid(String uuid);
 }

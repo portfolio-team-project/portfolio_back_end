@@ -34,16 +34,16 @@ public class AuthController {
 	        throw new RuntimeException("invalid refresh token");
 	    }
 	    
-	    // username 추출
-	    String username =
-	            jwtProvider.getUsername(refreshToken);
+	    // uuid 추출
+	    String uuid =
+	            jwtProvider.getUuid(refreshToken);
 
 	    // Redis 저장값 조회
 	    String savedRefreshToken =
-	            redisService.getRefreshToken(username);
+	            redisService.getRefreshToken(uuid);
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
-	    MemberEntity member = memberService.findByUserId(username);
+	    MemberEntity member = memberService.findByUuid(uuid);
 	    String authToken = memberService.getRole(member);
 	    
 	    // Redis 값 비교
@@ -56,15 +56,15 @@ public class AuthController {
 	    
 	    // 새 access token 발급
 	    String newAccessToken =
-	            jwtProvider.createToken(username,authToken);
+	            jwtProvider.createToken(uuid,authToken);
 
 	    // 새 refresh token 발급 (선택)
 	    String newRefreshToken =
-	            jwtProvider.createRefreshToken(username);
+	            jwtProvider.createRefreshToken(uuid);
 
 	    // Redis 갱신
 	    redisService.saveRefreshToken(
-	            username,
+	            uuid,
 	            newRefreshToken
 	    );
 	    

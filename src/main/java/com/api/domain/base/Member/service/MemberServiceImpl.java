@@ -43,9 +43,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public MemberEntity findByUserId(String userId) {
-		return memberRepository.findByUserId(userId)
-	            .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
+	public MemberEntity findByUuid(String uuid) {
+		return memberRepository.findByUuid(uuid)
+	            .orElseThrow(() -> new RuntimeException("존재하지 않는 유저 식별번호입니다."));
 	}
 	
 	

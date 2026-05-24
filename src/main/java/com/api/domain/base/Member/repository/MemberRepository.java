@@ -9,6 +9,6 @@ import com.api.domain.base.Member.entity.MemberEntity;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, String>{
-	Optional<MemberEntity> findByUserId(String userId);
+	Optional<MemberEntity> findByUuid(String uuid);
 	
 }

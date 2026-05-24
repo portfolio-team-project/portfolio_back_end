@@ -16,27 +16,27 @@ public class RedisService {
 	/*
 	 * refresh 토큰 저장
 	 * */
-	public void saveRefreshToken(String username, String refreshToken) {
+	public void saveRefreshToken(String uuid, String refreshToken) {
 		/*
 		 * 7일간 보관 후 자동 삭제
 		 * */
-		redisTemplate.opsForValue().set("RT:"+username, refreshToken, 7, TimeUnit.DAYS);
+		redisTemplate.opsForValue().set("RT:"+uuid, refreshToken, 7, TimeUnit.DAYS);
 	}
 	
 	/*
 	 * refresh 토큰 가져오기
 	 * */
-	public String getRefreshToken(String username) {
+	public String getRefreshToken(String uuid) {
 		
-		return (String) redisTemplate.opsForValue().get("RT:"+username);
+		return (String) redisTemplate.opsForValue().get("RT:"+uuid);
 	}
 	
 	/*
 	 * refresh 토큰 삭제
 	 * */
-	public void deleteRefreshToken(String username) {
+	public void deleteRefreshToken(String uuid) {
 
-	    redisTemplate.delete("RT:"+username);
+	    redisTemplate.delete("RT:"+uuid);
 	}
 	
 	
