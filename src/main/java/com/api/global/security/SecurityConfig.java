@@ -49,6 +49,7 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
+        		.requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers("/api/ds/**",
                 		         "/api/**",
                 		         "/health").permitAll()

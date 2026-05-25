@@ -1,5 +1,7 @@
 package com.api.domain.base.Login.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,7 @@ import com.api.domain.base.Login.dto.LoginRequest;
 import com.api.domain.base.Login.dto.LoginResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.redis.LoginFailService;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
 
@@ -26,11 +29,28 @@ public class LoginController {
 	private final MemberService memberService;
 	private final RedisService redisService;
 	private final JwtProvider jwtProvider;
+	private final LoginFailService loginFailService;
 	
 	@PostMapping("/login")
 	public LoginResponse login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
 		
-		MemberEntity member = memberService.login(request.getUserId(), request.getPassword());
+		// 1. 잠금 체크 (5회 이상 실패 시 차단)
+	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
+	    if (failCount >= 5) {
+	        throw new RuntimeException("계정이 잠겼습니다. 10분 후 다시 시도해주세요.");
+	    }
+	    
+	    MemberEntity member;
+	    try {
+	    	member = memberService.login(request.getUserId(), request.getPassword());
+		} catch (Exception e) {
+			// 실패 시 카운트 증가
+			loginFailService.increaseLoginFailCount(request.getUserId());
+	        throw e;
+		}
+	    
+	    //성공 시 카운트 초기화
+	    loginFailService.clearLoginFailCount(request.getUserId());
 		
 		String isRole = memberService.getRole(member);
 
@@ -50,5 +70,23 @@ public class LoginController {
 	    response.addCookie(cookie);
 
 	    return new LoginResponse(accessToken);
+	}
+	
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout(HttpServletResponse response) {
+		String uuid = (String) SecurityContextHolder.getContext()
+				                                    .getAuthentication()
+                                                    .getPrincipal();
+
+		redisService.deleteRefreshToken(uuid);
+		
+		Cookie cookie = new Cookie("refreshToken", null);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/refresh");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+		
+		return ResponseEntity.ok().build();
 	}
 }
