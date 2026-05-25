@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.domain.auth.dto.AuthResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
 
@@ -34,11 +35,11 @@ public class AuthController {
 	            .filter(c -> "refreshToken".equals(c.getName()))
 	            .findFirst()
 	            .map(Cookie::getValue)
-	            .orElseThrow(() -> new RuntimeException("refresh token not found"));
+	            .orElseThrow(() -> new BusinessException("refresh token not found"));
 		
 		// refresh token 유효성 검사
 	    if (!jwtProvider.validateToken(refreshToken)) {
-	        throw new RuntimeException("invalid refresh token");
+	        throw new BusinessException("invalid refresh token");
 	    }
 	    
 	    // uuid 추출
@@ -54,7 +55,7 @@ public class AuthController {
 	        savedRefreshToken == null
 	        || !savedRefreshToken.equals(refreshToken)
 	    ) {
-	        throw new RuntimeException("refresh token mismatch");
+	        throw new BusinessException("refresh token mismatch");
 	    }
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )

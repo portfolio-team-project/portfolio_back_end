@@ -12,6 +12,7 @@ import com.api.domain.base.Login.dto.LoginRequest;
 import com.api.domain.base.Login.dto.LoginResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.exception.BusinessException;
 import com.api.global.redis.LoginFailService;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
@@ -37,7 +38,7 @@ public class LoginController {
 		// 1. 잠금 체크 (5회 이상 실패 시 차단)
 	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
 	    if (failCount >= 5) {
-	        throw new RuntimeException("계정이 잠겼습니다. 10분 후 다시 시도해주세요.");
+	        throw new BusinessException("계정이 잠겼습니다. 10분 후 다시 시도해주세요.");
 	    }
 	    
 	    MemberEntity member;

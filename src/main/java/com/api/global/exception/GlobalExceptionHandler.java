@@ -61,9 +61,8 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, "요청한 리소스를 찾을 수 없습니다.", null));
     }
     
-    // 비즈니스 로직 예외
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<?>> handleRuntime(RuntimeException e) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<?>> handleBusiness(BusinessException e) {
         return ResponseEntity
                 .badRequest()
                 .body(new ApiResponse<>(false, e.getMessage(), null));

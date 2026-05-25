@@ -7,6 +7,7 @@ import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.repository.MemberRepository;
+import com.api.global.exception.BusinessException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +26,10 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public MemberEntity login(String userId, String password) {
-		MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("존재하지 않는 아이디입니다."));
+		MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException("존재하지 않는 아이디입니다."));
 		
 		if (!passwordEncoder.matches(password, member.getPassword())) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new BusinessException("비밀번호가 일치하지 않습니다.");
 		}
 		
 		return member;
@@ -37,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String getRole(MemberEntity member) {
 		UserAuthEntity userAuth = userAuthRepository.findByUserId(member)
-	            .orElseThrow(() -> new RuntimeException("권한 정보 없음"));
+	            .orElseThrow(() -> new BusinessException("권한 정보 없음"));
 		
 		return userAuth.getAuth().getAuthNm();
 	}
@@ -45,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public MemberEntity findByUuid(String uuid) {
 		return memberRepository.findByUuid(uuid)
-	            .orElseThrow(() -> new RuntimeException("존재하지 않는 유저 식별번호입니다."));
+	            .orElseThrow(() -> new BusinessException("존재하지 않는 유저 식별번호입니다."));
 	}
 	
 	
