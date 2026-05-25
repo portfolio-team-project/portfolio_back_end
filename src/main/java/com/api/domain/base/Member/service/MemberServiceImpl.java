@@ -2,6 +2,7 @@ package com.api.domain.base.Member.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
 	
 	private final MemberRepository memberRepository;
