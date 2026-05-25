@@ -30,6 +30,9 @@ public class AuthController {
 	@PostMapping("/refresh")
 	public AuthResponse refresh(HttpServletRequest request, HttpServletResponse response) {
 		
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) throw new BusinessException("쿠키 정보가 없습니다.");
+		
 		// 쿠키에서 refreshToken 꺼내기
 	    String refreshToken = Arrays.stream(request.getCookies())
 	            .filter(c -> "refreshToken".equals(c.getName()))
@@ -79,7 +82,7 @@ public class AuthController {
 	    Cookie cookie = new Cookie("refreshToken", newRefreshToken);
 	    cookie.setHttpOnly(true);
 	    cookie.setSecure(true);
-	    cookie.setPath("/refresh");
+	    cookie.setPath("/api/auth/refresh");
 	    cookie.setMaxAge(7 * 24 * 60 * 60);
 	    response.addCookie(cookie);
 	    

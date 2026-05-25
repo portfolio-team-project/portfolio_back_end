@@ -65,7 +65,7 @@ public class LoginController {
 	    Cookie cookie = new Cookie("refreshToken", refreshToken);
 	    cookie.setHttpOnly(true);   // JS 접근 불가
 	    cookie.setSecure(true);     // HTTPS에서만 전송 (운영 필수)
-	    cookie.setPath("/refresh"); // refresh API에서만 사용
+	    cookie.setPath("/api/auth/refresh"); // refresh API에서만 사용
 	    cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
 
 	    response.addCookie(cookie);
@@ -84,7 +84,7 @@ public class LoginController {
 		Cookie cookie = new Cookie("refreshToken", null);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
-		cookie.setPath("/refresh");
+		cookie.setPath("/api/auth/refresh");
 		cookie.setMaxAge(0);
 		response.addCookie(cookie);
 		

@@ -1,8 +1,11 @@
 package com.api.global.exception;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,10 +21,8 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleValid(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult()
-                          .getFieldErrors()
-                          .get(0)
-                          .getDefaultMessage();
+    	List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        String message = errors.isEmpty() ? "유효성 검사 실패" : errors.get(0).getDefaultMessage();
         return ResponseEntity
                 .badRequest()
                 .body(new ApiResponse<>(false, message, null));
