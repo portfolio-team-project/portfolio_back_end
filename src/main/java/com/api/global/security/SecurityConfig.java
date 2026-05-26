@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -50,7 +51,7 @@ public class SecurityConfig {
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
         		.requestMatchers("/api/auth/logout").authenticated()
-                .requestMatchers("/api/login", "/api/auth/refresh", "/health").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS,"/api/login", "/api/auth/refresh", "/health").permitAll()
                 .anyRequest().authenticated()
             ).exceptionHandling(ex -> ex
                     .authenticationEntryPoint(entryPoint)
