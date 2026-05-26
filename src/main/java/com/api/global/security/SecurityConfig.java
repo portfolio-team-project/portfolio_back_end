@@ -52,6 +52,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
         		.requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers(HttpMethod.OPTIONS,"/api/login", "/api/auth/refresh", "/health").permitAll()
+                .requestMatchers("/api/login", "/api/auth/refresh", "/health").permitAll()
                 .anyRequest().authenticated()
             ).exceptionHandling(ex -> ex
                     .authenticationEntryPoint(entryPoint)
