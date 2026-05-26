@@ -12,6 +12,7 @@ import com.api.domain.base.Login.dto.LoginRequest;
 import com.api.domain.base.Login.dto.LoginResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.common.ApiResponse;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.LoginFailService;
 import com.api.global.redis.RedisService;
@@ -33,7 +34,7 @@ public class LoginController {
 	private final LoginFailService loginFailService;
 	
 	@PostMapping("/login")
-	public LoginResponse login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
+	public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
 		
 		// 1. 잠금 체크 (5회 이상 실패 시 차단)
 	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
@@ -70,7 +71,7 @@ public class LoginController {
 
 	    response.addCookie(cookie);
 
-	    return new LoginResponse(accessToken,member.getUserId(),member.getUserName());
+	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName())));
 	}
 	
 	@PostMapping("/logout")
