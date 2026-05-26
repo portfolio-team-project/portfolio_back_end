@@ -23,6 +23,7 @@ import com.api.global.security.handler.CustomAuthenticationEntryPoint;
 import com.api.global.security.jwt.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * 
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Log4j2
 public class SecurityConfig {
     
     private final CorsProperties corsProperties;
@@ -78,6 +80,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(Arrays.asList(corsProperties.getAllowedOrigin().split(",")));
+        log.info("Allowed origins: {}", corsProperties.getAllowedOrigin());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
