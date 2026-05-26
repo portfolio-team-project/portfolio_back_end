@@ -70,7 +70,7 @@ public class LoginController {
 
 	    response.addCookie(cookie);
 
-	    return new LoginResponse(accessToken);
+	    return new LoginResponse(accessToken,member.getUserId(),member.getUserName());
 	}
 	
 	@PostMapping("/logout")

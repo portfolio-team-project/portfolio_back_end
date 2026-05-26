@@ -25,6 +25,9 @@ public class MemberEntity {
 	@Column(name="uuid")
 	private String uuid;
 	
+	@Column(name="user_name", length = 10)
+	private String userName;
+	
 	@Column(name="rank", length = 10)
 	private String rank;
 	
