@@ -21,7 +21,7 @@ spring:
 
           
 cors:
-    allowed-origin: ${CORS_ALLOWED_ORIGIN}
+    allowed-origin: ${CORS_ALLOWED_ORIGIN_PROD}
 
 jwt:
     secret: ${JWT_SECRET}
