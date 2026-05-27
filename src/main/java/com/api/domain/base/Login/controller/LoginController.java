@@ -39,39 +39,41 @@ public class LoginController {
 		// 1. 잠금 체크 (5회 이상 실패 시 차단)
 	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
 	    if (failCount >= 5) {
-	        throw new BusinessException("계정이 잠겼습니다. 10분 후 다시 시도해주세요.");
+	        throw new BusinessException("로그인이 일시적으로 제한되었습니다. 10분 후 다시 시도해주세요.");
 	    }
 	    
 	    MemberEntity member;
 	    try {
 	    	member = memberService.login(request.getUserId(), request.getPassword());
-		} catch (Exception e) {
-			// 실패 시 카운트 증가
-			loginFailService.increaseLoginFailCount(request.getUserId());
-	        throw e;
-		}
 	    
-	    //성공 시 카운트 초기화
-	    loginFailService.clearLoginFailCount(request.getUserId());
-		
-		String isRole = memberService.getRole(member);
-
-	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
-	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
-
-	    // Redis 저장
-	    redisService.saveRefreshToken(member.getUuid(), refreshToken);
-
-	    // HttpOnly Cookie 생성
-	    Cookie cookie = new Cookie("refreshToken", refreshToken);
-	    cookie.setHttpOnly(true);   // JS 접근 불가
-	    cookie.setSecure(true);     // HTTPS에서만 전송 (운영 필수)
-	    cookie.setPath("/api/auth/refresh"); // refresh API에서만 사용
-	    cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
-
-	    response.addCookie(cookie);
-
-	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName())));
+    	    //성공 시 카운트 초기화
+    	    loginFailService.clearLoginFailCount(request.getUserId());
+    		
+    		String isRole = memberService.getRole(member);
+    
+    	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
+    	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
+    
+    	    // Redis 저장
+    	    redisService.saveRefreshToken(member.getUuid(), refreshToken);
+    
+    	    // HttpOnly Cookie 생성
+    	    Cookie cookie = new Cookie("refreshToken", refreshToken);
+    	    cookie.setHttpOnly(true);   // JS 접근 불가
+    	    cookie.setSecure(true);     // HTTPS에서만 전송 (운영 필수)
+    	    cookie.setPath("/api/auth/refresh"); // refresh API에서만 사용
+    	    cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+    
+    	    response.addCookie(cookie);
+    
+    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName())));
+	    
+	    } catch (Exception e) {
+            // 실패 시 카운트 증가
+            loginFailService.increaseLoginFailCount(request.getUserId());
+            
+            throw new BusinessException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
 	}
 	
 	@PostMapping("/logout")
