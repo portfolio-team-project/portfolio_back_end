@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.domain.base.Member.dto.ChangePasswordRequest;
 import com.api.domain.base.Member.dto.MemberRequest;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
@@ -66,9 +67,9 @@ public class MemberController {
 	 * 비밀번호 재설정
 	 * */
 	@PostMapping("/rePassword")
-	public ResponseEntity<Boolean> rePassword(@RequestParam String userId, @RequestParam String newPassword){
+	public ResponseEntity<Boolean> rePassword(@RequestBody ChangePasswordRequest request){
 	    
-	    memberService.changePassword(userId, newPassword);
+	    memberService.changePassword(request.getUserId(), request.getNewPassword());
 	    
 	    return ResponseEntity.ok(true);
 	}
