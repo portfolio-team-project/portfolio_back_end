@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
-import com.api.domain.base.Member.entity.FindPasswordEntity;
 import com.api.domain.base.Member.entity.MemberEntity;
-import com.api.domain.base.Member.repository.FindPasswordRepository;
 import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
@@ -27,7 +25,6 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final UserAuthRepository userAuthRepository;
-	private final FindPasswordRepository findPasswordRepository;
 	private final MailUtil mailUtil;
 	private final RedisService redisService;
 
@@ -63,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void sendCertificationEmail(String userId, String email) {
-        MemberEntity member = memberRepository.sendCertificationEmail(userId, email)
+        MemberEntity member = memberRepository.findByUserIdAndEmail(userId, email)
                                               .orElseThrow(() -> new BusinessException("정보가 존재하지 않습니다."));
         
         //임의의 난수값 생성
@@ -81,10 +78,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void verifyCertificationNum(String userId, String certNum) {
         
-        FindPasswordEntity findPassword = findPasswordRepository.findByMember_UserId(userId)
-                                                                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
+        MemberEntity findUser = memberRepository.findByUserId(userId)
+                                                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
         
-        String savedCertNum = redisService.getCertNum(findPassword.getMember().getUuid());
+        String savedCertNum = redisService.getCertNum(findUser.getUuid());
         
         if (savedCertNum == null) {
             throw new BusinessException("인증번호가 만료되었습니다.");
