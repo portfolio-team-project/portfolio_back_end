@@ -66,7 +66,7 @@ public class MemberController {
 	/*
 	 * 비밀번호 재설정
 	 * */
-	@PostMapping("/rePassword")
+	@PostMapping("/resetPassword")
 	public ResponseEntity<Boolean> rePassword(@RequestBody ChangePasswordRequest request){
 	    
 	    memberService.changePassword(request.getUserId(), request.getNewPassword());
