@@ -10,5 +10,6 @@ import com.api.domain.base.Member.entity.MemberEntity;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, String>{
 	Optional<MemberEntity> findByUuid(String uuid);
+	Optional<MemberEntity> sendCertificationEmail(String userId, String email);
 	
 }

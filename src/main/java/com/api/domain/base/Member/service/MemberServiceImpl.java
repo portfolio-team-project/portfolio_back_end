@@ -1,12 +1,17 @@
 package com.api.domain.base.Member.service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
+import com.api.domain.base.Member.entity.FindPasswordEntity;
 import com.api.domain.base.Member.entity.MemberEntity;
+import com.api.domain.base.Member.repository.FindPasswordRepository;
 import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.exception.BusinessException;
 
@@ -20,6 +25,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final UserAuthRepository userAuthRepository;
+	private final FindPasswordRepository findPasswordRepository;
 
 	@Override
 	public boolean existsByUserId(String userId) {
@@ -50,6 +56,29 @@ public class MemberServiceImpl implements MemberService {
 		return memberRepository.findByUuid(uuid)
 	            .orElseThrow(() -> new BusinessException("존재하지 않는 유저 식별번호입니다."));
 	}
+
+    @Override
+    public void sendCertificationEmail(String userId, String email) {
+        MemberEntity member = memberRepository.sendCertificationEmail(userId, email)
+                                              .orElseThrow(() -> new BusinessException("정보가 존재하지 않습니다."));
+        
+        //임의의 난수값 생성
+        String certNum = String.valueOf((int)(Math.random() * 900000) + 100000);
+
+       FindPasswordEntity findPassword = FindPasswordEntity.builder()
+                                                           .member(member)
+                                                           .email(email)
+                                                           .certificateNum(certNum)
+                                                           .regDt(LocalDateTime.now())
+                                                           .useYn("N")
+                                                           .build();
+       
+       findPasswordRepository.save(findPassword);
+       
+       /*
+        * TODO 이메일 전송 필요
+        * */
+    }
 	
 	
 

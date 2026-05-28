@@ -57,4 +57,8 @@ public class MemberEntity {
 	
 	@Column(name="last_login_address", length=30)
 	private String lastLoginAddress;
+	
+	public void updatePassword(String password) {
+	    this.password = password;
+	}
 }

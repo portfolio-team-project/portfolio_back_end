@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.base.Member.dto.MemberRequest;
+import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 
 import jakarta.validation.Valid;
@@ -38,6 +39,14 @@ public class MemberController {
 	public ResponseEntity<Boolean> withdraw(@RequestBody MemberRequest request){
 		
 		return ResponseEntity.ok(null);
+	}
+	
+	@PostMapping("/findPassword")
+	public ResponseEntity<Boolean> findPassword(@RequestParam String userId, @RequestParam String email) {
+	    
+	    memberService.sendCertificationEmail(userId, email);
+	    
+	    return ResponseEntity.ok(true);
 	}
 	
 	// ID 중복확인
