@@ -9,4 +9,5 @@ public interface MemberService {
 	String getRole(MemberEntity member);
 	MemberEntity findByUuid(String uuid);
 	void sendCertificationEmail(String userId, String email);
+	void verifyCertificationNum(String userId,String certNum);
 }

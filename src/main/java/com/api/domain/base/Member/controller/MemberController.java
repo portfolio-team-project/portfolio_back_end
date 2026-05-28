@@ -49,6 +49,14 @@ public class MemberController {
 	    return ResponseEntity.ok(true);
 	}
 	
+	@PostMapping("/verifyNum")
+	public ResponseEntity<Boolean> verifyCertificationNum(@RequestParam String userId, @RequestParam String certificateNum){
+	    
+	    memberService.verifyCertificationNum(userId, certificateNum);
+	    
+	    return ResponseEntity.ok(true);
+	}
+	
 	// ID 중복확인
 	@GetMapping("/idCheck")
 	public ResponseEntity<Boolean> idCheck(@RequestParam String userId) {

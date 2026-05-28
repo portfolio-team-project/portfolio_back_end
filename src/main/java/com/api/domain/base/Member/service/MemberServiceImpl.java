@@ -14,6 +14,8 @@ import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.repository.FindPasswordRepository;
 import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.exception.BusinessException;
+import com.api.global.redis.RedisService;
+import com.api.global.util.MailUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,8 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final UserAuthRepository userAuthRepository;
 	private final FindPasswordRepository findPasswordRepository;
+	private final MailUtil mailUtil;
+	private final RedisService redisService;
 
 	@Override
 	public boolean existsByUserId(String userId) {
@@ -64,20 +68,30 @@ public class MemberServiceImpl implements MemberService {
         
         //임의의 난수값 생성
         String certNum = String.valueOf((int)(Math.random() * 900000) + 100000);
+       
+       redisService.saveCertNum(member.getUuid(), certNum);
+       
+       try {
+           mailUtil.req(email,certNum);
+        } catch (Exception e) {
+            throw new BusinessException("이메일 발송에 실패했습니다.");
+        }
+    }
 
-       FindPasswordEntity findPassword = FindPasswordEntity.builder()
-                                                           .member(member)
-                                                           .email(email)
-                                                           .certificateNum(certNum)
-                                                           .regDt(LocalDateTime.now())
-                                                           .useYn("N")
-                                                           .build();
-       
-       findPasswordRepository.save(findPassword);
-       
-       /*
-        * TODO 이메일 전송 필요
-        * */
+    @Override
+    public void verifyCertificationNum(String userId, String certNum) {
+        
+        FindPasswordEntity findPassword = findPasswordRepository.findByMember_UserId(userId)
+                                                                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
+        
+        String savedCertNum = redisService.getCertNum(findPassword.getMember().getUuid());
+        
+        if (savedCertNum == null) {
+            throw new BusinessException("인증번호가 만료되었습니다.");
+        }
+        if (!savedCertNum.equals(certNum)) {
+            throw new BusinessException("인증번호가 일치하지 않습니다.");
+        }
     }
 	
 	

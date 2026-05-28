@@ -40,7 +40,4 @@ public class FindPasswordEntity {
     
     @Column(name="reg_dt")
     private LocalDateTime regDt;
-    
-    @Column(name="use_yn", length=1)
-    private String useYn;
 }

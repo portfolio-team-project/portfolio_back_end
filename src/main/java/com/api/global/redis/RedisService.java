@@ -39,5 +39,19 @@ public class RedisService {
 	    redisTemplate.delete("RT:"+uuid);
 	}
 	
+	/*
+	 * 인증번호 저장
+	 * */
+	public void saveCertNum(String uuid, String certNum) {
+	    redisTemplate.opsForValue().set("CERT:"+uuid, certNum, 3, TimeUnit.MINUTES);
+	}
+	
+	/*
+	 * 인증번호 불러오기
+	 * */
+	public String getCertNum(String uuid) {
+	    return redisTemplate.opsForValue().get("CERT:"+uuid);
+	}
+	
 	
 }
