@@ -1,8 +1,5 @@
 package com.api.domain.base.Member.service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,10 +75,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void verifyCertificationNum(String userId, String certNum) {
         
-        MemberEntity findUser = memberRepository.findByUserId(userId)
+        MemberEntity member = memberRepository.findByUserId(userId)
                                                 .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
         
-        String savedCertNum = redisService.getCertNum(findUser.getUuid());
+        String savedCertNum = redisService.getCertNum(member.getUuid());
         
         if (savedCertNum == null) {
             throw new BusinessException("인증번호가 만료되었습니다.");
@@ -89,6 +86,17 @@ public class MemberServiceImpl implements MemberService {
         if (!savedCertNum.equals(certNum)) {
             throw new BusinessException("인증번호가 일치하지 않습니다.");
         }
+    }
+
+    @Override
+    public void changePassword(String userId, String newPassword) {
+        MemberEntity member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
+        
+        String password = passwordEncoder.encode(newPassword);
+        
+        member.updatePassword(password);
+        memberRepository.save(member);
     }
 	
 	

@@ -41,6 +41,9 @@ public class MemberController {
 		return ResponseEntity.ok(null);
 	}
 	
+	/*
+	 * 비밀번호 찾기
+	 * */
 	@PostMapping("/findPassword")
 	public ResponseEntity<Boolean> findPassword(@RequestParam String userId, @RequestParam String email) {
 	    
@@ -49,10 +52,23 @@ public class MemberController {
 	    return ResponseEntity.ok(true);
 	}
 	
+	/*
+	 * 인증번호 확인
+	 * */
 	@PostMapping("/verifyNum")
 	public ResponseEntity<Boolean> verifyCertificationNum(@RequestParam String userId, @RequestParam String certificateNum){
 	    
 	    memberService.verifyCertificationNum(userId, certificateNum);
+	    
+	    return ResponseEntity.ok(true);
+	}
+	/*
+	 * 비밀번호 재설정
+	 * */
+	@PostMapping("/rePassword")
+	public ResponseEntity<Boolean> rePassword(@RequestParam String userId, @RequestParam String newPassword){
+	    
+	    memberService.changePassword(userId, newPassword);
 	    
 	    return ResponseEntity.ok(true);
 	}

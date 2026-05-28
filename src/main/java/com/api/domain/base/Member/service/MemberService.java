@@ -10,4 +10,5 @@ public interface MemberService {
 	MemberEntity findByUuid(String uuid);
 	void sendCertificationEmail(String userId, String email);
 	void verifyCertificationNum(String userId,String certNum);
+	void changePassword(String userId, String newPassword);
 }
