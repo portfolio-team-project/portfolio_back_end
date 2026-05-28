@@ -93,8 +93,6 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
         
-        
-        
         String password = passwordEncoder.encode(newPassword);
         
         member.updatePassword(password);
