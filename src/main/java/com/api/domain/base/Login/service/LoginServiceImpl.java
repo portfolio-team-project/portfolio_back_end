@@ -26,7 +26,7 @@ public class LoginServiceImpl implements LoginService{
         LoginEntity loginLog = LoginEntity.builder()
                                        .member(member)
                                        .userIp(clientIp)
-                                       .requestUrl(request.getRequestURI())
+                                       .requestUri(request.getRequestURI())
                                        .userAgent(request.getHeader("User-Agent"))
                                        .loginYn(loginYn)
                                        .failReason(failReason)

@@ -41,8 +41,8 @@ public class LoginEntity {
     @Column(name="access_dt")
     private LocalDateTime accessDt;
     
-    @Column(name="request_url", length=200)
-    private String requestUrl;
+    @Column(name="request_uri", length=200)
+    private String requestUri;
     
     @Column(name="user_agent", length=1000)
     private String userAgent;
