@@ -14,6 +14,7 @@ import com.api.domain.base.Login.service.LoginService;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
+import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.LoginFailService;
 import com.api.global.redis.RedisService;
@@ -43,8 +44,8 @@ public class LoginController {
 	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
 	    if (failCount >= 5) {
 	        
-	        loginService.saveLog(null, httpRequest, "N", "로그인이 일시적으로 제한되었습니다. 10분 후 다시 시도해주세요.");
-	        throw new BusinessException("로그인이 일시적으로 제한되었습니다. 10분 후 다시 시도해주세요.");
+	        loginService.saveLog(null, httpRequest, "N", MessageConstants.LOGIN_LOCKED);
+	        throw new BusinessException(MessageConstants.LOGIN_LOCKED);
 	    }
 	    
 	    MemberEntity member;
@@ -81,7 +82,7 @@ public class LoginController {
             
             loginService.saveLog(null, httpRequest, "N", e.toString());
             
-            throw new BusinessException("아이디 또는 비밀번호가 올바르지 않습니다.");
+            throw new BusinessException(MessageConstants.LOGIN_FAILED);
         }
 	}
 	

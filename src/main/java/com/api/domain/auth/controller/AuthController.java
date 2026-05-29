@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.domain.auth.dto.AuthResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
@@ -31,18 +32,18 @@ public class AuthController {
 	public AuthResponse refresh(HttpServletRequest request, HttpServletResponse response) {
 		
 		Cookie[] cookies = request.getCookies();
-		if (cookies == null) throw new BusinessException("쿠키 정보가 없습니다.");
+		if (cookies == null) throw new BusinessException(MessageConstants.COOKIE_NOT_FOUND);
 		
 		// 쿠키에서 refreshToken 꺼내기
 	    String refreshToken = Arrays.stream(request.getCookies())
 	            .filter(c -> "refreshToken".equals(c.getName()))
 	            .findFirst()
 	            .map(Cookie::getValue)
-	            .orElseThrow(() -> new BusinessException("refresh token not found"));
+	            .orElseThrow(() -> new BusinessException(MessageConstants.REFRESH_TOKEN_NOT_FOUND));
 		
 		// refresh token 유효성 검사
 	    if (!jwtProvider.validateToken(refreshToken)) {
-	        throw new BusinessException("invalid refresh token");
+	        throw new BusinessException(MessageConstants.REFRESH_TOKEN_INVALID);
 	    }
 	    
 	    // uuid 추출
@@ -58,7 +59,7 @@ public class AuthController {
 	        savedRefreshToken == null
 	        || !savedRefreshToken.equals(refreshToken)
 	    ) {
-	        throw new BusinessException("refresh token mismatch");
+	        throw new BusinessException(MessageConstants.REFRESH_TOKEN_MISMATCH);
 	    }
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )

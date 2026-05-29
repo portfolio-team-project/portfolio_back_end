@@ -8,6 +8,7 @@ import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.repository.MemberRepository;
+import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
 import com.api.global.util.MailUtil;
@@ -32,10 +33,10 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public MemberEntity login(String userId, String password) {
-		MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException("존재하지 않는 아이디입니다."));
+		MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
 		
 		if (!passwordEncoder.matches(password, member.getPassword())) {
-			throw new BusinessException("비밀번호가 일치하지 않습니다.");
+			throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);
 		}
 		
 		return member;
@@ -44,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String getRole(MemberEntity member) {
 		UserAuthEntity userAuth = userAuthRepository.findByUserId(member)
-	            .orElseThrow(() -> new BusinessException("권한 정보 없음"));
+	            .orElseThrow(() -> new BusinessException(MessageConstants.AUTH_NOT_FOUND));
 		
 		return userAuth.getAuth().getAuthNm();
 	}
@@ -52,13 +53,13 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public MemberEntity findByUuid(String uuid) {
 		return memberRepository.findByUuid(uuid)
-	            .orElseThrow(() -> new BusinessException("존재하지 않는 유저 식별번호입니다."));
+	            .orElseThrow(() -> new BusinessException(MessageConstants.UUID_NOT_FOUND));
 	}
 
     @Override
     public void sendCertificationEmail(String userId, String email) {
         MemberEntity member = memberRepository.findByUserIdAndEmail(userId, email)
-                                              .orElseThrow(() -> new BusinessException("정보가 존재하지 않습니다."));
+                                              .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_INFO_NOT_FOUND));
         
         //임의의 난수값 생성
         String certNum = String.valueOf((int)(Math.random() * 900000) + 100000);
@@ -68,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
        try {
            mailUtil.req(email,certNum);
         } catch (Exception e) {
-            throw new BusinessException("이메일 발송에 실패했습니다.");
+            throw new BusinessException(MessageConstants.EMAIL_SEND_FAILED);
         }
     }
 
@@ -76,22 +77,22 @@ public class MemberServiceImpl implements MemberService {
     public void verifyCertificationNum(String userId, String certNum) {
         
         MemberEntity member = memberRepository.findByUserId(userId)
-                                                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
+                                                .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
         
         String savedCertNum = redisService.getCertNum(member.getUuid());
         
         if (savedCertNum == null) {
-            throw new BusinessException("인증번호가 만료되었습니다.");
+            throw new BusinessException(MessageConstants.CERT_NUM_EXPIRED);
         }
         if (!savedCertNum.equals(certNum)) {
-            throw new BusinessException("인증번호가 일치하지 않습니다.");
+            throw new BusinessException(MessageConstants.CERT_NUM_NOT_MATCH);
         }
     }
 
     @Override
     public void changePassword(String userId, String newPassword) {
         MemberEntity member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
         
         String password = passwordEncoder.encode(newPassword);
         
