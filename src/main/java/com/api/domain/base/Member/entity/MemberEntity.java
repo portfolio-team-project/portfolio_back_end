@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,8 +35,12 @@ public class MemberEntity {
 	@Column(name="cp_name", length = 10)
 	private String cpName;
 	
-	@Column(name="sso", length = 10)
-	private String sso;
+	@Column(name="social_yn", length = 1)
+	@Default
+	private String socialYn = "N";
+	
+	@Column(name="kakao_id", length= 255)
+	private String kakaoId;
 	
 	@Column(name="email", length = 30)
 	private String email;
