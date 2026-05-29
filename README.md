@@ -19,8 +19,27 @@ Jenkins를 이용해 CI/CD를 구성하여 홈 서버에 자동 배포하는 것
 ## 🧰 Environment
 
 - JDK: 17.0.19 (LTS)
-- Spring Boot: 3.5
+- Spring Boot: 3.5.0
 - Gradle
+- Redis
+- Nginx
+- Cloudflare Tunnel
+
+---
+
+## 🏗 Architecture
+
+```
+Client → Cloudflare Tunnel → Nginx → Spring Boot (WAS)
+                                   ↘ Redis (Token 관리)
+                                   ↘ PostgreSQL (DB)
+```
+
+---
+
+## 📄 API 명세
+
+[back_api.md](./back_api.md)
 
 ## 🚀 실행 방법
 
