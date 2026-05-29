@@ -87,6 +87,8 @@ public class MemberServiceImpl implements MemberService {
         if (!savedCertNum.equals(certNum)) {
             throw new BusinessException(MessageConstants.CERT_NUM_NOT_MATCH);
         }
+        
+        redisService.saveVerified(member.getUuid());
     }
 
     @Override
@@ -94,10 +96,16 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
         
+        if (!redisService.getVerified(member.getUuid())) {
+            throw new BusinessException(MessageConstants.CERT_NOT_VERIFIED);
+        }
+        
         String password = passwordEncoder.encode(newPassword);
         
         member.updatePassword(password);
         memberRepository.save(member);
+        
+        redisService.deleteVerified(member.getUuid());
     }
 	
 	

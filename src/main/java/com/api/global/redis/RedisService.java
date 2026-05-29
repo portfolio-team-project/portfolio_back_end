@@ -52,6 +52,25 @@ public class RedisService {
 	public String getCertNum(String uuid) {
 	    return redisTemplate.opsForValue().get("CERT:"+uuid);
 	}
+	/*
+	 * 인증 완료 여부
+	 * */
+	public void saveVerified(String uuid) {
+	    redisTemplate.opsForValue().set("VERIFIED:" + uuid, "true", 5, TimeUnit.MINUTES);
+	}
 	
+	/*
+	 * 인증 완료 확인
+	 * */
+	public boolean getVerified(String uuid) {
+	    return "true".equals(redisTemplate.opsForValue().get("VERIFIED:"+uuid));
+	}
+	
+	/*
+	 * 확인 완료된 인증 여부 삭제
+	 * */
+	public void deleteVerified(String uuid) {
+	    redisTemplate.delete("VERIFIED:"+uuid);
+	}
 	
 }

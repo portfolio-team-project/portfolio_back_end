@@ -18,6 +18,7 @@ public class MessageConstants {
     public static final String CERT_NUM_EXPIRED = "인증번호가 만료되었습니다.";
     public static final String CERT_NUM_NOT_MATCH = "인증번호가 일치하지 않습니다.";
     public static final String EMAIL_SEND_FAILED = "이메일 발송에 실패했습니다.";
+    public static final String CERT_NOT_VERIFIED = "인증이 완료되지 않았습니다.";
     
     // 인증 토큰
     public static final String COOKIE_NOT_FOUND = "쿠키 정보가 없습니다.";
