@@ -39,7 +39,7 @@ Client → Cloudflare Tunnel → Nginx → Spring Boot (WAS)
 
 ## 📄 API 명세
 
-[back_api.md](./back_api.md)
+[back_api.md](./dist/docs/back_api.md)
 
 ## 🚀 실행 방법
 
