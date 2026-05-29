@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.base.Login.dto.LoginRequest;
 import com.api.domain.base.Login.dto.LoginResponse;
+import com.api.domain.base.Login.service.LoginService;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
@@ -19,6 +20,7 @@ import com.api.global.redis.RedisService;
 import com.api.global.security.jwt.JwtProvider;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +34,16 @@ public class LoginController {
 	private final RedisService redisService;
 	private final JwtProvider jwtProvider;
 	private final LoginFailService loginFailService;
+	private final LoginService loginService;
 	
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest request, HttpServletResponse response) {
+	public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse response) {
 		
 		// 1. 잠금 체크 (5회 이상 실패 시 차단)
 	    int failCount = loginFailService.getLoginFailCount(request.getUserId());
 	    if (failCount >= 5) {
+	        
+	        loginService.saveLog(null, httpRequest, "N", "로그인이 일시적으로 제한되었습니다. 10분 후 다시 시도해주세요.");
 	        throw new BusinessException("로그인이 일시적으로 제한되었습니다. 10분 후 다시 시도해주세요.");
 	    }
 	    
@@ -48,6 +53,8 @@ public class LoginController {
 	    
     	    //성공 시 카운트 초기화
     	    loginFailService.clearLoginFailCount(request.getUserId());
+    	    
+    	    loginService.saveLog(member, httpRequest, "Y", null);
     		
     		String isRole = memberService.getRole(member);
     
@@ -71,6 +78,8 @@ public class LoginController {
 	    } catch (Exception e) {
             // 실패 시 카운트 증가
             loginFailService.increaseLoginFailCount(request.getUserId());
+            
+            loginService.saveLog(null, httpRequest, "N", e.toString());
             
             throw new BusinessException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
