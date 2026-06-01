@@ -6,14 +6,6 @@
 
 ---
 
-## Health
-
-| Method | URL | 설명 |
-|--------|-----|------|
-| GET | `/health` | 서버 상태 확인 |
-
----
-
 ## Auth
 
 | Method | URL | 설명 |
