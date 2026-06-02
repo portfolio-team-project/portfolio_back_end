@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleBusiness(BusinessException e) {
         return ResponseEntity
                 .badRequest()
-                .body(new ApiResponse<>(false, e.getMessage(), null));
+                .body(new ApiResponse<>(false, e.getMessage(), e.getData()));
     }
 
     // 그 외 모든 예외 (안전망)

@@ -2,13 +2,21 @@ package com.api.domain.auth.controller;
 
 import java.util.Arrays;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.auth.dto.AuthResponse;
+import com.api.domain.auth.dto.SocialLoginRequest;
+import com.api.domain.auth.service.KaKaoService;
+import com.api.domain.base.Login.dto.LoginResponse;
+import com.api.domain.base.Login.service.LoginService;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.common.ApiResponse;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
@@ -27,6 +35,8 @@ public class AuthController {
 	private final JwtProvider jwtProvider;
 	private final RedisService redisService;
 	private final MemberService memberService;
+	private final KaKaoService kakaoService;
+	private final LoginService loginService;
 	
 	@PostMapping("/refresh")
 	public AuthResponse refresh(HttpServletRequest request, HttpServletResponse response) {
@@ -91,4 +101,43 @@ public class AuthController {
 		return new AuthResponse( newAccessToken );
 	}
 	
+	@PostMapping("/social/{provider}")
+	public ResponseEntity<ApiResponse<LoginResponse>> socialLogin(@PathVariable String provider, @RequestBody SocialLoginRequest request, HttpServletRequest httpRequest, HttpServletResponse response) {
+	    
+	    MemberEntity member;
+	    if (provider.equals("kakao")) {
+	        try {
+	            member = kakaoService.login(request.getCode());
+	        } catch (BusinessException e) {
+	            loginService.saveLog(null, httpRequest, "N", e.getMessage());
+	            throw e;  // 다시 던져서 글로벌 핸들러로
+	        } catch (Exception e) {
+	            loginService.saveLog(null, httpRequest, "N", e.getMessage());
+	            throw new BusinessException("카카오 로그인 처리 중 오류가 발생했습니다.");
+	        }
+	    } else {
+	        throw new BusinessException("지원하지 않는 소셜 로그인입니다.");
+	    }
+	    
+	    loginService.saveLog(member, httpRequest, "Y", null);
+        
+        String isRole = memberService.getRole(member);
+
+        String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
+        String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
+
+        // Redis 저장
+        redisService.saveRefreshToken(member.getUuid(), refreshToken);
+
+        // HttpOnly Cookie 생성
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);   // JS 접근 불가
+        cookie.setSecure(true);     // HTTPS에서만 전송 (운영 필수)
+        cookie.setPath("/api/auth/refresh"); // refresh API에서만 사용
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+
+        response.addCookie(cookie);
+	    
+        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, member.getUserId(), member.getUserName())));
+    }
 }
