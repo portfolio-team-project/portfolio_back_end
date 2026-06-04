@@ -16,4 +16,4 @@ kakao:
   client-id: ${KAKAO_REST_API_KEY}
   redirect-uri: ${KAKAO_REDIRECT_URI}
   token-url: https://kauth.kakao.com/oauth/token
-  user-info-url: https://kapi.kakao.com/v1/user/me
+  user-info-url: https://kapi.kakao.com/v2/user/me
