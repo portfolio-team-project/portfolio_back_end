@@ -1,4 +1,6 @@
 spring:
+    main:
+        banner-mode: console
     config:
         import: optional:file:src/.env[.properties]
     datasource:

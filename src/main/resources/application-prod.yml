@@ -1,4 +1,6 @@
 spring:
+    main:
+        banner-mode: log
     datasource:
         url: ${DB_URL_PROD}
         username: ${DB_USERNAME_PROD}

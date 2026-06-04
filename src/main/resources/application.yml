@@ -6,8 +6,6 @@ server:
   port: 8081
 
 spring:
-  main:
-    banner-mode: console
   profiles:
     active:
     - ${SPRING_PROFILES_ACTIVE:dev}
