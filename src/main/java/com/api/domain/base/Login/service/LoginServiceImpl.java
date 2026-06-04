@@ -19,6 +19,7 @@ public class LoginServiceImpl implements LoginService{
     private final LoginRepository loginRepository;
     
     @Override
+    @Transactional
     public void saveLog(MemberEntity member, HttpServletRequest request, String loginYn, String failReason) {
         
         String clientIp = HttpUtil.getClientIp(request);
