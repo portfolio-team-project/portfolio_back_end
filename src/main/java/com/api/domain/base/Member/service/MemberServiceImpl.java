@@ -1,5 +1,7 @@
 package com.api.domain.base.Member.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,6 +108,15 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         
         redisService.deleteVerified(member.getUuid());
+    }
+
+    @Override
+    public void checkPasswordExpired(MemberEntity member) {
+        
+        if (member.getChgPwdDt() == null || 
+                member.getChgPwdDt().isBefore(LocalDateTime.now().minusMonths(3))) {
+            throw new BusinessException(MessageConstants.PWD_EXPIRED);
+            }
     }
 	
 	

@@ -56,6 +56,9 @@ public class LoginController {
     	    loginFailService.clearLoginFailCount(request.getUserId());
     	    
     	    loginService.saveLog(member, httpRequest, "Y", null);
+    	    
+    	    //TO-DO 3개월 주기 로그인 체크 필요
+    	    memberService.checkPasswordExpired(member);
     		
     		String isRole = memberService.getRole(member);
     
@@ -77,6 +80,9 @@ public class LoginController {
     	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName())));
 	    
 	    } catch (Exception e) {
+	        if (MessageConstants.PWD_EXPIRED.equals(e.getMessage())) {
+	            throw (BusinessException)e;
+	        }
             // 실패 시 카운트 증가
             loginFailService.increaseLoginFailCount(request.getUserId());
             

@@ -63,6 +63,9 @@ public class MemberEntity {
 	@Column(name="last_login_address", length=30)
 	private String lastLoginAddress;
 	
+	@Column(name="chg_pwd_dt")
+	private LocalDateTime chgPwdDt;
+	
 	public void updatePassword(String password) {
 	    this.password = password;
 	}
