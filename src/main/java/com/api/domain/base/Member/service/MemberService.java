@@ -12,4 +12,5 @@ public interface MemberService {
 	void verifyCertificationNum(String userId,String certNum);
 	void changePassword(String userId, String newPassword);
 	void checkPasswordExpired(MemberEntity member);
+	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
 }

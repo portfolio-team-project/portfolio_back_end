@@ -64,7 +64,7 @@ public class MemberController {
 	    return ResponseEntity.ok(true);
 	}
 	/*
-	 * 비밀번호 재설정
+	 * 인증메일 비밀번호 재설정
 	 * */
 	@PostMapping("/resetPassword")
 	public ResponseEntity<Boolean> rePassword(@RequestBody ChangePasswordRequest request){
@@ -74,12 +74,22 @@ public class MemberController {
 	    return ResponseEntity.ok(true);
 	}
 	
+	/*
+	 * 비밀번호 변경
+	 * */
+	@PostMapping("/changePassword")
+	public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequest request) {
+	    
+	    memberService.verifyAndChangePassword(request.getUserId(), request.getCurrentPassword(), request.getNewPassword());
+	    
+	    return ResponseEntity.ok(true);
+	}
+	
 	// ID 중복확인
 	@GetMapping("/idCheck")
 	public ResponseEntity<Boolean> idCheck(@RequestParam String userId) {
 		
 		boolean isDuplicated = memberService.existsByUserId(userId);
-		
 		
 		return ResponseEntity.ok(isDuplicated);
 	}

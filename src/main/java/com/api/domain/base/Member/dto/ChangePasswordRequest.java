@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangePasswordRequest {
     private String userId;
+    private String currentPassword; // null 허용
     
     @NotBlank(message="비밀번호는 필수값입니다.")
     @Pattern(

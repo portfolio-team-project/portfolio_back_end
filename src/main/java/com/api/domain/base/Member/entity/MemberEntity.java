@@ -68,5 +68,6 @@ public class MemberEntity {
 	
 	public void updatePassword(String password) {
 	    this.password = password;
+	    this.chgPwdDt = LocalDateTime.now();
 	}
 }

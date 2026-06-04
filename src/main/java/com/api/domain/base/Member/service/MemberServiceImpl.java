@@ -102,10 +102,7 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(MessageConstants.CERT_NOT_VERIFIED);
         }
         
-        String password = passwordEncoder.encode(newPassword);
-        
-        member.updatePassword(password);
-        memberRepository.save(member);
+        updatePassword(member, newPassword);
         
         redisService.deleteVerified(member.getUuid());
     }
@@ -117,6 +114,26 @@ public class MemberServiceImpl implements MemberService {
                 member.getChgPwdDt().isBefore(LocalDateTime.now().minusMonths(3))) {
             throw new BusinessException(MessageConstants.PWD_EXPIRED);
             }
+    }
+
+    @Override
+    public void verifyAndChangePassword(String userId, String currentPwd, String newPassword) {
+        MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
+        
+        if (!passwordEncoder.matches(currentPwd, member.getPassword())) {
+            
+            throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);
+        }
+        
+        updatePassword(member, newPassword);
+        
+        redisService.deleteRefreshToken(member.getUuid());
+        
+    }
+    
+    private void updatePassword(MemberEntity member, String newPassword) {
+        member.updatePassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
     }
 	
 	
