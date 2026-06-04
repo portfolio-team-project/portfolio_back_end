@@ -26,10 +26,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Log4j2
 public class AuthController {
 	
 	private final JwtProvider jwtProvider;
@@ -112,6 +114,7 @@ public class AuthController {
 	            loginService.saveLog(null, httpRequest, "N", e.getMessage());
 	            throw e;  // 다시 던져서 글로벌 핸들러로
 	        } catch (Exception e) {
+	            log.error("카카오 로그인 오류: {}", e.getMessage(), e);
 	            loginService.saveLog(null, httpRequest, "N", e.getMessage());
 	            throw new BusinessException("카카오 로그인 처리 중 오류가 발생했습니다.");
 	        }
