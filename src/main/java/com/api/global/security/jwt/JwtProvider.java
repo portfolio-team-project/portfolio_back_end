@@ -22,6 +22,10 @@ import io.jsonwebtoken.security.Keys;
 public class JwtProvider {
 	@Value("${jwt.secret}")
     private String secret;
+	@Value("${jwt.expiration}")
+	private Long expiration;
+	@Value("${jwt.refresh-expiration}")
+	private Long refreshExpiration;
 	
 	/*
 	 * String key값을 Secret Key 값으로 변환
@@ -39,7 +43,7 @@ public class JwtProvider {
                    .claim("type", "access")
                    .claim("role",role)
                    .issuedAt(new Date())
-                   .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                   .expiration(new Date(System.currentTimeMillis() + expiration))
                    .signWith(getSigningKey())
                    .compact();
     }
@@ -50,7 +54,7 @@ public class JwtProvider {
                 .subject(uuid)
                 .claim("type","refresh")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
