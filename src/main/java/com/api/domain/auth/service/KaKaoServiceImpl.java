@@ -51,14 +51,14 @@ public class KaKaoServiceImpl implements KaKaoService{
         
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", kakaoProperties.getClientId());
-        params.add("redirect_uri", kakaoProperties.getRedirectUri());
+        params.add("client_id", kakaoProperties.clientId());
+        params.add("redirect_uri", kakaoProperties.redirectUri());
         params.add("code", code);
         
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         
         ResponseEntity<Map> response = restTemplate.postForEntity(
-            kakaoProperties.getTokenUrl(), request, Map.class
+            kakaoProperties.tokenUrl(), request, Map.class
         );
         
         return (String) response.getBody().get("access_token");
@@ -71,7 +71,7 @@ public class KaKaoServiceImpl implements KaKaoService{
         HttpEntity<Void> request = new HttpEntity<>(headers);
         
         ResponseEntity<Map> response = restTemplate.exchange(
-            kakaoProperties.getUserInfoUrl(),
+            kakaoProperties.userInfoUrl(),
             HttpMethod.GET,
             request,
             Map.class

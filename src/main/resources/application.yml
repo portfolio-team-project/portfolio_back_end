@@ -7,7 +7,7 @@ server:
 
 spring:
   main:
-    banner-mode: off #배너끄기
+    banner-mode: console
   profiles:
     active:
     - ${SPRING_PROFILES_ACTIVE:dev}
