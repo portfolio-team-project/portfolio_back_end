@@ -72,5 +72,40 @@ public class RedisService {
 	public void deleteVerified(String uuid) {
 	    redisTemplate.delete("VERIFIED:"+uuid);
 	}
-	
+
+	/*
+	 * 회원가입 이메일 인증번호 저장
+	 * */
+	public void saveSignupCertNum(String email, String certNum) {
+	    redisTemplate.opsForValue().set("SIGNUP_CERT:" + email, certNum, 3, TimeUnit.MINUTES);
+	}
+
+	/*
+	 * 회원가입 이메일 인증번호 조회
+	 * */
+	public String getSignupCertNum(String email) {
+	    return redisTemplate.opsForValue().get("SIGNUP_CERT:" + email);
+	}
+
+	/*
+	 * 회원가입 이메일 인증 완료 저장
+	 * */
+	public void saveSignupVerified(String email) {
+	    redisTemplate.opsForValue().set("SIGNUP_VERIFIED:" + email, "true", 5, TimeUnit.MINUTES);
+	}
+
+	/*
+	 * 회원가입 이메일 인증 완료 확인
+	 * */
+	public boolean getSignupVerified(String email) {
+	    return "true".equals(redisTemplate.opsForValue().get("SIGNUP_VERIFIED:" + email));
+	}
+
+	/*
+	 * 회원가입 이메일 인증 완료 삭제
+	 * */
+	public void deleteSignupVerified(String email) {
+	    redisTemplate.delete("SIGNUP_VERIFIED:" + email);
+	}
+
 }

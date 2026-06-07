@@ -55,7 +55,18 @@ public class SecurityConfig {
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
         		.requestMatchers("/api/auth/logout").authenticated()
-                .requestMatchers("/api/login", "/api/auth/**", "/health").permitAll()
+                .requestMatchers(
+                    "/api/login",
+                    "/api/auth/**",
+                    "/api/member/idCheck",
+                    "/api/member/findPassword",
+                    "/api/member/verifyNum",
+                    "/api/member/resetPassword",
+                    "/api/accession/sendEmailAuth",
+                    "/api/accession/verifyNum",
+                    "/api/accession/join",
+                    "/health"
+                ).permitAll()
                 .anyRequest().authenticated()
             ).exceptionHandling(ex -> ex
                     .authenticationEntryPoint(entryPoint)

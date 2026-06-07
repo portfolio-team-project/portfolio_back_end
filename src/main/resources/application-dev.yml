@@ -3,6 +3,18 @@ spring:
         banner-mode: console
     config:
         import: optional:file:src/.env[.properties]
+    mail:
+        host: ${MAIL_HOST}
+        port: ${MAIL_PORT}
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+                required: true
     datasource:
         url: ${DB_URL_PROD}
         username: ${DB_USERNAME_PROD}
@@ -22,19 +34,7 @@ spring:
         redis:
           host: ${REDIS_HOST_PROD}
           port: ${REDIS_PORT_PROD}
-    mail:
-        host: ${MAIL_HOST}
-        port: ${MAIL_PORT}
-        username: ${MAIL_USERNAME}
-        password: ${MAIL_PASSWORD}
-        properties:
-          mail:
-            smtp:
-              auth: true
-              starttls:
-                enable: true
 
-          
 cors:
     allowed-origin: ${CORS_ALLOWED_ORIGIN_DEV}
 
