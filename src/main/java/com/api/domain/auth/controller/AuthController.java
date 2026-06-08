@@ -41,7 +41,7 @@ public class AuthController {
 	private final LoginService loginService;
 	
 	@PostMapping("/refresh")
-	public AuthResponse refresh(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<ApiResponse<LoginResponse>> refresh(HttpServletRequest request, HttpServletResponse response) {
 		
 		Cookie[] cookies = request.getCookies();
 		if (cookies == null) throw new BusinessException(MessageConstants.COOKIE_NOT_FOUND);
@@ -100,7 +100,7 @@ public class AuthController {
 	    response.addCookie(cookie);
 	    
 		
-		return new AuthResponse( newAccessToken );
+		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(newAccessToken,member.getUserId(),member.getUserName())));
 	}
 	
 	@PostMapping("/social/{provider}")
