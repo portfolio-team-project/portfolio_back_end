@@ -76,11 +76,11 @@ public class AuthController {
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
 	    MemberEntity member = memberService.findByUuid(uuid);
-	    String authToken = memberService.getRole(member);
+	    String isRole = memberService.getRole(member);
 	    
 	    // 새 access token 발급
 	    String newAccessToken =
-	            jwtProvider.createToken(uuid,authToken);
+	            jwtProvider.createToken(uuid,isRole);
 
 	    // 새 refresh token 발급 (선택)
 	    String newRefreshToken =
@@ -100,7 +100,7 @@ public class AuthController {
 	    response.addCookie(cookie);
 	    
 		
-		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(newAccessToken,member.getUserId(),member.getUserName())));
+		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(newAccessToken,member.getUserId(),member.getUserName(),isRole)));
 	}
 	
 	@PostMapping("/social/{provider}")
@@ -146,6 +146,6 @@ public class AuthController {
 
         response.addCookie(cookie);
 	    
-        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, member.getUserId(), member.getUserName())));
+        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, member.getUserId(), member.getUserName(),isRole)));
     }
 }

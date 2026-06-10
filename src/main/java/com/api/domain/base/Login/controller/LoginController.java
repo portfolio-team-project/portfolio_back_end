@@ -77,7 +77,7 @@ public class LoginController {
     
     	    response.addCookie(cookie);
     
-    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName())));
+    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole)));
 	    
 	    } catch (Exception e) {
 	        if (MessageConstants.PWD_EXPIRED.equals(e.getMessage())) {
