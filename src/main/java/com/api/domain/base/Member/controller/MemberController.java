@@ -13,6 +13,7 @@ import com.api.domain.base.Member.dto.ChangePasswordRequest;
 import com.api.domain.base.Member.dto.MemberRequest;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.global.common.ApiResponse;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -46,32 +47,32 @@ public class MemberController {
 	 * 비밀번호 찾기
 	 * */
 	@PostMapping("/findPassword")
-	public ResponseEntity<Boolean> findPassword(@RequestParam String userId, @RequestParam String email) {
+	public ResponseEntity<ApiResponse<Void>> findPassword(@RequestParam String userId, @RequestParam String email) {
 	    
 	    memberService.sendCertificationEmail(userId, email);
 	    
-	    return ResponseEntity.ok(true);
+	    return ResponseEntity.ok(ApiResponse.ok());
 	}
 	
 	/*
 	 * 인증번호 확인
 	 * */
 	@PostMapping("/verifyNum")
-	public ResponseEntity<Boolean> verifyCertificationNum(@RequestParam String userId, @RequestParam String certificateNum){
+	public ResponseEntity<ApiResponse<Void>> verifyCertificationNum(@RequestParam String userId, @RequestParam String certificateNum){
 	    
 	    memberService.verifyCertificationNum(userId, certificateNum);
 	    
-	    return ResponseEntity.ok(true);
+	    return ResponseEntity.ok(ApiResponse.ok());
 	}
 	/*
 	 * 인증메일 비밀번호 재설정
 	 * */
 	@PostMapping("/resetPassword")
-	public ResponseEntity<Boolean> rePassword(@RequestBody ChangePasswordRequest request){
+	public ResponseEntity<ApiResponse<Void>> rePassword(@RequestBody ChangePasswordRequest request){
 	    
 	    memberService.changePassword(request.getUserId(), request.getNewPassword());
 	    
-	    return ResponseEntity.ok(true);
+	    return ResponseEntity.ok(ApiResponse.ok());
 	}
 	
 	/*

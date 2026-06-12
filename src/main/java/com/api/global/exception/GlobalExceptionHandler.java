@@ -15,7 +15,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.api.global.common.ApiResponse;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
@@ -72,6 +74,7 @@ public class GlobalExceptionHandler {
     // 그 외 모든 예외 (안전망)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+        log.error("Unhandled exception: ", e);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(false, "서버 오류가 발생했습니다.", null));

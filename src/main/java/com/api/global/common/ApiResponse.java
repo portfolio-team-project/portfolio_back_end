@@ -17,4 +17,8 @@ public class ApiResponse <T> {
     public static <T> ApiResponse<T> ok(T data) {
         return new ApiResponse<>(true, "OK", data);
     }
+    
+    public static ApiResponse<Void> ok() {
+        return new ApiResponse<>(true, "OK", null);
+    }
 }

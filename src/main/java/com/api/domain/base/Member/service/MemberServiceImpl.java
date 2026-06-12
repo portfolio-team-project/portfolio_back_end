@@ -61,7 +61,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void sendCertificationEmail(String userId, String email) {
         MemberEntity member = memberRepository.findByUserIdAndEmail(userId, email)
-                                              .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_INFO_NOT_FOUND));
+                                              .orElseThrow(() -> new BusinessException(MessageConstants.CHECK_EMAIL_ID));
         
         //임의의 난수값 생성
         String certNum = String.valueOf((int)(Math.random() * 900000) + 100000);
@@ -94,6 +94,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void changePassword(String userId, String newPassword) {
         MemberEntity member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
@@ -117,6 +118,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void verifyAndChangePassword(String userId, String currentPwd, String newPassword) {
         MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
         
