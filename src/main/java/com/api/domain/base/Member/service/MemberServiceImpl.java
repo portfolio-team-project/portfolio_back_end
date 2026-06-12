@@ -1,13 +1,17 @@
 package com.api.domain.base.Member.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
+import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.constants.MessageConstants;
@@ -49,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
 		UserAuthEntity userAuth = userAuthRepository.findByUserId(member)
 	            .orElseThrow(() -> new BusinessException(MessageConstants.AUTH_NOT_FOUND));
 		
-		return userAuth.getAuth().getAuthNm();
+		return userAuth.getAuth().getAuthCode();
 	}
 
 	@Override
@@ -137,7 +141,19 @@ public class MemberServiceImpl implements MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
     }
-	
-	
+
+	@Override
+	public List<MemberResponse> findAllMembers() {
+		return memberRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"))
+			   .stream()
+		       .map(m -> MemberResponse.builder()
+		    	        .userId(m.getUserId())
+		    	        .userName(m.getUserName())
+		    	        .email(m.getEmail())
+		    	        .status(m.getStatus())
+		    	        .createdDate(m.getCreatedDate())
+		    	        .build())
+		       .collect(Collectors.toList());
+	}
 
 }

@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.base.Member.dto.ChangePasswordRequest;
 import com.api.domain.base.Member.dto.MemberRequest;
-import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController
