@@ -6,14 +6,18 @@ public class HttpUtil {
     
     public static String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("CF-Connecting-IP"); // cloudflare 실제 클라이언트 아이피
-        if (ip != null && !ip.isBlank()) return ip;
+        if (ip != null && !ip.isBlank()) return normalize(ip);
 
-        ip = request.getHeader("X-Forwarded-For"); //프록시 체인 전체 아이피
-        if (ip != null && !ip.isBlank()) return ip.split(",")[0].trim(); // 실사용자 아이피
+        ip = request.getHeader("X-Forwarded-For"); // 프록시 체인 전체 아이피
+        if (ip != null && !ip.isBlank()) return normalize(ip.split(",")[0].trim()); // 실사용자 아이피
 
-        ip = request.getHeader("X-Real-IP"); //Nginx 설정 실아이피
-        if (ip != null && !ip.isBlank()) return ip;
+        ip = request.getHeader("X-Real-IP"); // Nginx 설정 실아이피
+        if (ip != null && !ip.isBlank()) return normalize(ip);
 
-        return request.getRemoteAddr();
+        return normalize(request.getRemoteAddr());
+    }
+
+    private static String normalize(String ip) {
+        return ("0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)) ? "127.0.0.1" : ip;
     }
 }

@@ -1,5 +1,6 @@
 package com.api.domain.base.Accession.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -55,4 +56,15 @@ public class AccessionRequest {
     @NotBlank(message = "이메일은 필수값입니다.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;
+
+    /** 이용약관 동의 (필수 — false 이면 유효성 검사 실패) */
+    @AssertTrue(message = "이용약관에 동의해주세요.")
+    private boolean termsAgree;
+
+    /** 개인정보 수집·이용 동의 (필수 — false 이면 유효성 검사 실패) */
+    @AssertTrue(message = "개인정보 수집·이용에 동의해주세요.")
+    private boolean privacyAgree;
+
+    /** 마케팅 정보 수신 동의 (선택) */
+    private boolean marketingAgree;
 }

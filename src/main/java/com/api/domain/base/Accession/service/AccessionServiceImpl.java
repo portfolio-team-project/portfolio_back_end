@@ -148,6 +148,14 @@ public class AccessionServiceImpl implements AccessionService {
                 .createdDate(now)
                 .lastLogin(now)           // 가입 시점을 최초 로그인 시각으로 기록
                 .lastLoginAddress(clientIp) // 가입 시점 IP 기록
+                .work(request.getWork())
+                .department(request.getDepartment())
+                .termsAgree(request.isTermsAgree())
+                .privacyAgree(request.isPrivacyAgree())
+                .marketingAgree(request.isMarketingAgree())
+                .termsAgreeDate(now)
+                .privacyAgreeDate(now)
+                .marketingAgreeDate(request.isMarketingAgree() ? now : null)
                 .build();
 
         MemberEntity savedMember = memberRepository.save(member);

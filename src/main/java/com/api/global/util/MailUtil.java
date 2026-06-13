@@ -17,17 +17,19 @@ public class MailUtil {
     private final JavaMailSender javaMailSender;
     
     public void req(String userEmail, String certNum) throws Exception {
-        send(userEmail, certNum, "[포트폴리오] 비밀번호 찾기 인증번호");
+        send(userEmail, certNum, "[포트폴리오] 비밀번호 찾기 인증번호", "비밀번호 찾기");
     }
 
     public void reqSignup(String userEmail, String certNum) throws Exception {
-        send(userEmail, certNum, "[포트폴리오] 회원가입 이메일 인증번호");
+        send(userEmail, certNum, "[포트폴리오] 회원가입 이메일 인증번호", "회원가입 인증");
     }
 
-    private void send(String userEmail, String certNum, String subject) throws Exception {
+    private void send(String userEmail, String certNum, String subject, String title) throws Exception {
         ClassPathResource resource = new ClassPathResource("templates/Email_Cert_template.html");
         String template = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        String content = template.replace("{{certNum}}", certNum);
+        String content = template
+                .replace("{{title}}", title)
+                .replace("{{certNum}}", certNum);
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");

@@ -14,6 +14,7 @@ import com.api.domain.base.Accession.dto.EmailAuthRequest;
 import com.api.domain.base.Accession.dto.VerifyNumRequest;
 import com.api.domain.base.Accession.service.AccessionService;
 import com.api.global.common.ApiResponse;
+import com.api.global.util.HttpUtil;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -88,17 +89,10 @@ public class AccessionController {
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<String>> join(@RequestBody @Valid AccessionRequest request,
                                                     HttpServletRequest httpRequest) {
-        String clientIp = resolveClientIp(httpRequest);
+        String clientIp = HttpUtil.getClientIp(httpRequest);
         accessionService.join(request, clientIp);
         return ResponseEntity.ok(ApiResponse.ok("/"));
     }
 
-    /** X-Forwarded-For 헤더를 우선 확인해 실제 클라이언트 IP를 반환합니다. IPv6 루프백은 127.0.0.1로 정규화합니다. */
-    private String resolveClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        String ip = (forwarded != null && !forwarded.isBlank())
-                ? forwarded.split(",")[0].trim()
-                : request.getRemoteAddr();
-        return "0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip) ? "127.0.0.1" : ip;
-    }
+
 }

@@ -66,7 +66,31 @@ public class MemberEntity {
 	
 	@Column(name="chg_pwd_dt")
 	private LocalDateTime chgPwdDt;
-	
+
+	@Column(name="work", length = 50)
+	private String work;
+
+	@Column(name="department", length = 50)
+	private String department;
+
+	@Column(name="terms_agree", nullable = false)
+	private boolean termsAgree;
+
+	@Column(name="privacy_agree", nullable = false)
+	private boolean privacyAgree;
+
+	@Column(name="marketing_agree", nullable = false)
+	private boolean marketingAgree;
+
+	@Column(name="terms_agree_date")
+	private LocalDateTime termsAgreeDate;
+
+	@Column(name="privacy_agree_date")
+	private LocalDateTime privacyAgreeDate;
+
+	@Column(name="marketing_agree_date")
+	private LocalDateTime marketingAgreeDate;
+
 	public void updatePassword(String password) {
 	    this.password = password;
 	    this.chgPwdDt = LocalDateTime.now();
