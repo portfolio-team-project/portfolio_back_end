@@ -7,7 +7,7 @@ import com.api.domain.base.Member.entity.MemberEntity;
 
 public interface MemberService {
     
-	boolean existsByUserId(String userId);
+	String checkUserId(String userId);
 	MemberEntity login(String userId, String password);
 	String getRole(MemberEntity member);
 	MemberEntity findByUuid(String uuid);
@@ -17,4 +17,5 @@ public interface MemberService {
 	void checkPasswordExpired(MemberEntity member);
 	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
 	List<MemberResponse> findAllMembers();
+	void withdraw(String userId, String password);
 }

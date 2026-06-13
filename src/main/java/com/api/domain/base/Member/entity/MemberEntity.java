@@ -95,4 +95,9 @@ public class MemberEntity {
 	    this.password = password;
 	    this.chgPwdDt = LocalDateTime.now();
 	}
+
+	public void withdraw() {
+	    this.status = "N";
+	    this.updatedDate = LocalDateTime.now();
+	}
 }

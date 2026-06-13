@@ -1,6 +1,7 @@
 package com.api.domain.base.Member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,9 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.base.Member.dto.ChangePasswordRequest;
 import com.api.domain.base.Member.dto.MemberRequest;
+import com.api.domain.base.Member.dto.WithdrawRequest;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,9 +40,18 @@ public class MemberController {
 	
 	// 회원탈퇴
 	@PostMapping("/withdraw")
-	public ResponseEntity<Boolean> withdraw(@RequestBody MemberRequest request){
-		
-		return ResponseEntity.ok(null);
+	public ResponseEntity<ApiResponse<Void>> withdraw(@RequestBody @Valid WithdrawRequest request, HttpServletResponse response) {
+		String userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		memberService.withdraw(userId, request.getPassword());
+
+		Cookie cookie = new Cookie("refreshToken", null);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/api/auth/refresh");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+
+		return ResponseEntity.ok(ApiResponse.ok(null));
 	}
 	
 	/*
@@ -85,11 +99,8 @@ public class MemberController {
 	
 	// ID 중복확인
 	@GetMapping("/idCheck")
-	public ResponseEntity<Boolean> idCheck(@RequestParam String userId) {
-		
-		boolean isDuplicated = memberService.existsByUserId(userId);
-		
-		return ResponseEntity.ok(isDuplicated);
+	public ResponseEntity<ApiResponse<String>> idCheck(@RequestParam String userId) {
+		return ResponseEntity.ok(ApiResponse.ok(memberService.checkUserId(userId)));
 	}
 	
 	// 회원조회

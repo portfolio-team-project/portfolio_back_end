@@ -83,6 +83,10 @@ public class LoginController {
 	        if (MessageConstants.PWD_EXPIRED.equals(e.getMessage())) {
 	            throw (BusinessException)e;
 	        }
+			// 탈퇴한 계정으로 들어올때
+	        if (MessageConstants.MEMBER_WITHDRAWN.equals(e.getMessage())) {
+	            throw (BusinessException)e;
+	        }
             // 실패 시 카운트 증가
             loginFailService.increaseLoginFailCount(request.getUserId());
             

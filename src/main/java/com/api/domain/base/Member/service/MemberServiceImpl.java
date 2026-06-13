@@ -33,18 +33,24 @@ public class MemberServiceImpl implements MemberService {
 	private final RedisService redisService;
 
 	@Override
-	public boolean existsByUserId(String userId) {
-		return memberRepository.existsById(userId);
+	public String checkUserId(String userId) {
+		return memberRepository.findById(userId)
+				.map(m -> "N".equals(m.getStatus()) ? "WITHDRAWN" : "DUPLICATED") // WITHDRAWN: 탈퇴, DUPLICATED: 사용 중
+				.orElse("AVAILABLE"); // AVAILABLE: 사용 가능
 	}
 
 	@Override
 	public MemberEntity login(String userId, String password) {
 		MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
-		
+
+		if ("N".equals(member.getStatus())) {
+			throw new BusinessException(MessageConstants.MEMBER_WITHDRAWN);
+		}
+
 		if (!passwordEncoder.matches(password, member.getPassword())) {
 			throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);
 		}
-		
+
 		return member;
 	}
 
@@ -140,6 +146,22 @@ public class MemberServiceImpl implements MemberService {
     private void updatePassword(MemberEntity member, String newPassword) {
         member.updatePassword(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
+    }
+
+    @Override
+    @Transactional
+    public void withdraw(String uuid, String password) {
+        MemberEntity member = memberRepository.findByUuid(uuid)
+                .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);
+        }
+
+        member.withdraw();
+        memberRepository.save(member);
+
+        redisService.deleteRefreshToken(member.getUuid());
     }
 
 	@Override

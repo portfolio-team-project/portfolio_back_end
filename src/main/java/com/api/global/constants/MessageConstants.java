@@ -25,6 +25,9 @@ public class MessageConstants {
     // 회원가입
     public static final String USER_ID_DUPLICATED = "이미 사용 중인 아이디입니다.";
 
+    // 회원 탈퇴
+    public static final String MEMBER_WITHDRAWN = "탈퇴한 계정입니다.";
+
     // 인증 토큰
     public static final String COOKIE_NOT_FOUND = "쿠키 정보가 없습니다.";
     public static final String REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
