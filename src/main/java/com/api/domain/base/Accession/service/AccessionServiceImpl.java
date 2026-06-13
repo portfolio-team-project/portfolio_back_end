@@ -118,9 +118,12 @@ public class AccessionServiceImpl implements AccessionService {
     @Transactional
     public void join(AccessionRequest request, String clientIp) {
         // 1. 아이디 중복 확인
-        if (memberRepository.existsById(request.getUserId())) {
+        memberRepository.findById(request.getUserId()).ifPresent(m -> {
+            if ("N".equals(m.getStatus())) {
+                throw new BusinessException(MessageConstants.MEMBER_WITHDRAWN);
+            }
             throw new BusinessException(MessageConstants.USER_ID_DUPLICATED);
-        }
+        });
 
         // 2. 이메일 인증 완료 여부 확인 (2단계를 거치지 않으면 가입 불가)
         if (!redisService.getSignupVerified(request.getEmail())) {
@@ -146,8 +149,9 @@ public class AccessionServiceImpl implements AccessionService {
                 .socialYn("N")            // 일반 회원 (SSO/소셜 로그인 아님)
                 .status("Y")              // 정상 활성 상태
                 .createdDate(now)
-                .lastLogin(now)           // 가입 시점을 최초 로그인 시각으로 기록
-                .lastLoginAddress(clientIp) // 가입 시점 IP 기록
+                .lastLogin(now)
+                .lastLoginAddress(clientIp)
+                .chgPwdDt(now)
                 .work(request.getWork())
                 .department(request.getDepartment())
                 .termsAgree(request.isTermsAgree())
