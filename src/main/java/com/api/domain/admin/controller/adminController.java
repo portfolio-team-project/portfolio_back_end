@@ -31,4 +31,11 @@ public class adminController {
 		return ResponseEntity.ok(ApiResponse.ok(memberList));
 	}
 	
+	@GetMapping("/totalcount")
+	public ResponseEntity<Boolean> memberTotalCount() {
+		
+		
+		return ResponseEntity.ok(true);
+	}
+	
 }

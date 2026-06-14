@@ -36,9 +36,6 @@ public class MemberEntity {
 	@Column(name="cp_name", length = 10)
 	private String cpName;
 	
-	@Column(name="social_yn", length = 1, nullable = false)
-	private String socialYn;
-	
 	@Column(name="kakao_id", length= 255)
 	private String kakaoId;
 	

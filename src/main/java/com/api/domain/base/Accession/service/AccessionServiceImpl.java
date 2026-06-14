@@ -146,7 +146,6 @@ public class AccessionServiceImpl implements AccessionService {
                 .cpName(request.getCpName())
                 .email(request.getEmail())
                 .password(encodedPassword)
-                .socialYn("N")            // 일반 회원 (SSO/소셜 로그인 아님)
                 .status("Y")              // 정상 활성 상태
                 .createdDate(now)
                 .lastLogin(now)
