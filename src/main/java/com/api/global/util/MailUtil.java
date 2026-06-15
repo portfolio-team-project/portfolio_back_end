@@ -8,6 +8,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.api.global.constants.MailConstant;
+
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
@@ -53,11 +55,11 @@ public class MailUtil {
     	String receiver = "";
     	String toEmail = "";
     	if ("cb".equals(recipient)) {
-    		receiver = "이의광";
+    		receiver = MailConstant.LEE;
     		toEmail = leeEmail;
     	}
     	else {
-    		receiver = "지상원";
+    		receiver = MailConstant.JI;
     		toEmail = jiEmail;
     	}
     	
