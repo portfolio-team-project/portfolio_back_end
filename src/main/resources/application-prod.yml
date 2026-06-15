@@ -45,4 +45,7 @@ jwt:
 logging:
   level:
     com.api: INFO
-    
+
+email:
+    lee: pshowx12@naver.com
+    ji: jisang034@naver.com

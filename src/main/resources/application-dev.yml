@@ -42,3 +42,7 @@ jwt:
     secret: ${JWT_SECRET}
     expiration: ${JWT_EXPIRATION}
     refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    
+email:
+    lee: pshowx12@naver.com
+    ji: jisang034@naver.com

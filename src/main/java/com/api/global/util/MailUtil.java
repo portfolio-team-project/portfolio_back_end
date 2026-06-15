@@ -2,6 +2,7 @@ package com.api.global.util;
 
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,6 +15,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailUtil {
     
+	@Value("${email.lee}")
+	private String leeEmail;
+	
+	@Value("${email.ji}")
+	private String jiEmail;
+	
     private final JavaMailSender javaMailSender;
     
     public void req(String userEmail, String certNum) throws Exception {
@@ -37,6 +44,35 @@ public class MailUtil {
         helper.setSubject(subject);
         helper.setText(content, true);
 
+        javaMailSender.send(message);
+    }
+    
+    public void sendContact(String fromName, String fromEmail, String messageBody, String recipient) throws Exception {
+    	ClassPathResource resource = new ClassPathResource("templates/Email_Contact_template.html");
+    	
+    	String receiver = "";
+    	String toEmail = "";
+    	if ("cb".equals(recipient)) {
+    		receiver = "이의광";
+    		toEmail = leeEmail;
+    	}
+    	else {
+    		receiver = "지상원";
+    		toEmail = jiEmail;
+    	}
+    	
+        String template = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        String content = template
+                .replace("{{fromName}}", fromName)
+                .replace("{{fromEmail}}", fromEmail)
+                .replace("{{messageBody}}",messageBody)
+                .replace("{{recipientName}}",receiver);
+    	
+    	MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setTo(toEmail);
+        helper.setSubject("[포트폴리오] " + fromName + "님의 연락");
+        helper.setText(content,true);
         javaMailSender.send(message);
     }
 }

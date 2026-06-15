@@ -65,6 +65,7 @@ public class SecurityConfig {
                     "/api/accession/sendEmailAuth",
                     "/api/accession/verifyNum",
                     "/api/accession/join",
+                    "/api/mail/**",
                     "/health"
                 ).permitAll()
                 .anyRequest().authenticated()
