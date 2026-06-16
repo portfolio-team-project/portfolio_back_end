@@ -1,6 +1,7 @@
 package com.api.domain.base.Member.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
@@ -16,6 +17,6 @@ public interface MemberService {
 	void changePassword(String userId, String newPassword);
 	void checkPasswordExpired(MemberEntity member);
 	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
-	List<MemberResponse> findAllMembers();
+	Page<MemberResponse> findAllMembers(Pageable pageable);
 	void withdraw(String userId, String password);
 }

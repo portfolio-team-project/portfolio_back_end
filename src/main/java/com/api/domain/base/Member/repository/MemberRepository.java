@@ -1,8 +1,10 @@
 package com.api.domain.base.Member.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.api.domain.base.Member.entity.MemberEntity;
@@ -13,4 +15,5 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String>{
 	Optional<MemberEntity> findByUserIdAndEmail(String userId, String email);
 	Optional<MemberEntity> findByUserId(String userId);
 	Optional<MemberEntity> findByKakaoId(String kakaoId);
+	long countByCreatedDateBetween(LocalDateTime start, LocalDateTime end);
 }

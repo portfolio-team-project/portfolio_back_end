@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -165,17 +168,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
 	@Override
-	public List<MemberResponse> findAllMembers() {
-		return memberRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"))
-			   .stream()
-		       .map(m -> MemberResponse.builder()
-		    	        .userId(m.getUserId())
-		    	        .userName(m.getUserName())
-		    	        .email(m.getEmail())
-		    	        .status(m.getStatus())
-		    	        .createdDate(m.getCreatedDate())
-		    	        .build())
-		       .collect(Collectors.toList());
+	public Page<MemberResponse> findAllMembers(Pageable pageable) {
+		return memberRepository.findAll(
+			       PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), 
+	                      Sort.by(Sort.Direction.DESC, "createdDate"))
+			   ).map(m -> MemberResponse.builder()
+							            .userId(m.getUserId())
+							            .userName(m.getUserName())
+							            .email(m.getEmail())
+							            .status(m.getStatus())
+							            .createdDate(m.getCreatedDate())
+							            .build());
 	}
 
 }
