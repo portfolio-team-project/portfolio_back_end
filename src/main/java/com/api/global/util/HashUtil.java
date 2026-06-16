@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HashUtil {
 	
-	@Value("${aes.secret-key}") // 32자 키
+	@Value("${hash.secret-key}") // 32자 키
     private String secretKey;
 
 	public String hash(String value) {
