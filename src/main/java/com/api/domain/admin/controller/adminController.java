@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.admin.dto.adminRequest;
 import com.api.domain.admin.service.AdminService;
+import com.api.domain.base.Member.dto.MemberDetailResponse;
 import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
@@ -48,12 +49,12 @@ public class adminController {
 		return ResponseEntity.ok(ApiResponse.ok(monthCount));
 	}
 	
-	@GetMapping("/userInfo")
-	public ResponseEntity<Boolean> userInfo() {
+	@GetMapping("/detailUserInfo")
+	public ResponseEntity<ApiResponse<MemberDetailResponse>> detailUserInfo(@RequestParam String userId) {
 		
+		MemberDetailResponse detailUserInfo = adminService.findMemberDetail(userId);
 		
-		
-		return ResponseEntity.ok(null);
+		return ResponseEntity.ok(ApiResponse.ok(detailUserInfo));
 	}
 	
 }
