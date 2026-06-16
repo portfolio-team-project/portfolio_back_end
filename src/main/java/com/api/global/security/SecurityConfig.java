@@ -57,6 +57,7 @@ public class SecurityConfig {
         		.requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers(
                     "/api/login",
+                    "/api/kakaoJoin",
                     "/api/auth/**",
                     "/api/member/idCheck",
                     "/api/member/findPassword",
