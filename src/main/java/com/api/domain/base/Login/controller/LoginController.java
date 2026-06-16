@@ -2,7 +2,6 @@ package com.api.domain.base.Login.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.domain.base.Login.dto.LoginRequest;
 import com.api.domain.base.Login.dto.LoginResponse;
+import com.api.domain.base.Login.dto.KakaoLoginRequest;
 import com.api.domain.base.Login.service.LoginService;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
@@ -94,6 +94,45 @@ public class LoginController {
             
             throw new BusinessException(MessageConstants.LOGIN_FAILED);
         }
+	}
+	
+	@PostMapping("/kakaoJoin")
+	public ResponseEntity<ApiResponse<LoginResponse>> kakaoJoin(@Valid @RequestBody KakaoLoginRequest request, HttpServletRequest httpRequest, HttpServletResponse response) {
+		
+		MemberEntity member = loginService.kakaoJoin(request, httpRequest);
+		
+		try {
+			loginService.saveLog(member, httpRequest, "Y", null);
+			
+			String isRole = memberService.getRole(member);
+		    
+    	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
+    	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
+    
+    	    // Redis 저장
+    	    redisService.saveRefreshToken(member.getUuid(), refreshToken);
+    
+    	    // HttpOnly Cookie 생성
+    	    Cookie cookie = new Cookie("refreshToken", refreshToken);
+    	    cookie.setHttpOnly(true);   // JS 접근 불가
+    	    cookie.setSecure(true);     // HTTPS에서만 전송 (운영 필수)
+    	    cookie.setPath("/api/auth/refresh"); // refresh API에서만 사용
+    	    cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+    
+    	    response.addCookie(cookie);
+    
+    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole)));
+		
+		} catch (Exception e) {
+			// 탈퇴한 계정으로 들어올때
+	        if (MessageConstants.MEMBER_WITHDRAWN.equals(e.getMessage())) {
+	            throw (BusinessException)e;
+	        }
+	        loginService.saveLog(null, httpRequest, "N", e.toString());
+            
+            throw new BusinessException(MessageConstants.LOGIN_FAILED);
+		}
+		
 	}
 	
 	@PostMapping("/logout")
