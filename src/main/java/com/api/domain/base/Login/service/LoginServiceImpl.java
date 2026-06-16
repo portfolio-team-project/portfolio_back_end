@@ -54,6 +54,7 @@ public class LoginServiceImpl implements LoginService{
     }
 
 	@Override
+	@Transactional
 	public MemberEntity kakaoJoin(KakaoLoginRequest request, HttpServletRequest httpRequest) {
 		
 		// 1. 아이디 중복 확인
