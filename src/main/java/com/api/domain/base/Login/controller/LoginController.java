@@ -48,6 +48,12 @@ public class LoginController {
 	        throw new BusinessException(MessageConstants.LOGIN_LOCKED);
 	    }
 	    
+	    String kakaoCheck = memberService.checkKakaoId(request.getUserId());
+	    
+	    if ("Y".equals(kakaoCheck)) {
+	    	throw new BusinessException(MessageConstants.LOGIN_FAILED);
+	    }
+	    
 	    MemberEntity member;
 	    try {
 	    	member = memberService.login(request.getUserId(), request.getPassword());
