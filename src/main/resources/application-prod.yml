@@ -20,6 +20,9 @@ spring:
         redis:
           host: ${REDIS_HOST_PROD}
           port: ${REDIS_PORT_PROD}
+        web:
+          pageable:
+            serialization-mode: via-dto
           
     mail:
         host: ${MAIL_HOST}

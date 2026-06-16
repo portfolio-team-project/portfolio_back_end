@@ -34,6 +34,9 @@ spring:
         redis:
           host: ${REDIS_HOST_PROD}
           port: ${REDIS_PORT_PROD}
+        web:
+          pageable:
+            serialization-mode: via-dto
 
 cors:
     allowed-origin: ${CORS_ALLOWED_ORIGIN_DEV}
