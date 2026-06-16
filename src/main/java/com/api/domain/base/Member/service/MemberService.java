@@ -19,5 +19,4 @@ public interface MemberService {
 	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
 	Page<MemberResponse> findAllMembers(Pageable pageable);
 	void withdraw(String userId, String password);
-	String checkKakaoId(String userId);
 }

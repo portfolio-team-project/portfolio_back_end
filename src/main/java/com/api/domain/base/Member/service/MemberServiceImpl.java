@@ -181,16 +181,4 @@ public class MemberServiceImpl implements MemberService {
 							            .build());
 	}
 
-	@Override
-	public String checkKakaoId(String userId) {
-		
-		MemberEntity member = memberRepository.findByUserId(userId)
-				                              .orElse(null);
-		
-		if (member == null || member.getKakaoId() == null || member.getKakaoId().isEmpty()) {
-		    return "N";
-		}
-		return "Y";
-	}
-
 }
