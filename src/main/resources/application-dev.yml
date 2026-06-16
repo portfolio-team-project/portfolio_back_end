@@ -46,3 +46,6 @@ jwt:
 email:
     lee: pshowx12@naver.com
     ji: jisang034@naver.com
+    
+aes:
+  secret-key: ${AES_SECRET_KEY}

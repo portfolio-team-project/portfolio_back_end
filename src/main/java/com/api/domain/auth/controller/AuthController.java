@@ -123,11 +123,6 @@ public class AuthController {
 	    }
 	    
 	    loginService.saveLog(member, httpRequest, "Y", null);
-	    try {
-	        memberService.checkPasswordExpired(member);
-	    } catch (BusinessException e) {
-	        throw e;
-	    }
         
         String isRole = memberService.getRole(member);
 

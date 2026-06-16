@@ -7,6 +7,8 @@ import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.config.KaKaoProperties;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
+import com.api.global.util.HashUtil;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpEntity;
@@ -26,6 +28,7 @@ public class KaKaoServiceImpl implements KaKaoService{
     private final KaKaoProperties kakaoProperties;
     private final MemberRepository memberRepository;
     private final RestTemplate restTemplate;
+    private final HashUtil hashUtil;
 
     @Override
     public MemberEntity login(String code) {
@@ -36,8 +39,10 @@ public class KaKaoServiceImpl implements KaKaoService{
         // 카카오아이디값 불러오기
         String kakaoId = getKakaoUserInfo(accessToken);
         
+        String kakaoIdEnc = hashUtil.hash(kakaoId);
+        
         //db 내 카카오 아이디 조회 ( 없을 시 에러 반환 )
-        MemberEntity member = memberRepository.findByKakaoId(kakaoId)
+        MemberEntity member = memberRepository.findByKakaoId(kakaoIdEnc)
                 .orElseThrow(() -> new BusinessException( MessageConstants.MEMBER_NOT_FOUND,
                                                           Map.of("kakaoId", kakaoId)
                                                          ));

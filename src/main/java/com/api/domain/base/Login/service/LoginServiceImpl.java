@@ -3,7 +3,6 @@ package com.api.domain.base.Login.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +18,7 @@ import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
+import com.api.global.util.HashUtil;
 import com.api.global.util.HttpUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +34,7 @@ public class LoginServiceImpl implements LoginService{
     private final RedisService redisService;
     private final AuthRepository authRepository;
     private final UserAuthRepository userAuthRepository;
+    private final HashUtil hashUtil;
 
     @Override
     @Transactional
@@ -72,6 +73,9 @@ public class LoginServiceImpl implements LoginService{
         
         // 3. client Id 생성
         String clientIp = HttpUtil.getClientIp(httpRequest);
+        
+        // kakaoId 암호화
+        String kakaoIdEnc = hashUtil.hash(request.getKakaoId());
 
         // 4. UUID 생성 — JWT 및 Redis 키에서 회원을 식별하는 값
         String uuid = UUID.randomUUID().toString();
@@ -85,7 +89,7 @@ public class LoginServiceImpl implements LoginService{
                 .rank(request.getRank())
                 .cpName(request.getCpName())
                 .email(request.getEmail())
-                .kakaoId(request.getKakaoId())
+                .kakaoId(kakaoIdEnc)
                 .status("Y")              // 정상 활성 상태
                 .createdDate(now)
                 .lastLogin(now)
