@@ -135,6 +135,10 @@ public class MemberServiceImpl implements MemberService {
     public void verifyAndChangePassword(String userId, String currentPwd, String newPassword) {
         MemberEntity member = memberRepository.findById(userId).orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
         
+        if (passwordEncoder.matches(newPassword, member.getPassword())) {
+        	throw new BusinessException(MessageConstants.SAME_PASSWORD);
+        }
+        
         if (!passwordEncoder.matches(currentPwd, member.getPassword())) {
             
             throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);

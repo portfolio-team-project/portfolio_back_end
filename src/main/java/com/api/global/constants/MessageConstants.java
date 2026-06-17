@@ -14,6 +14,7 @@ public class MessageConstants {
     public static final String MEMBER_INFO_NOT_FOUND = "정보가 존재하지 않습니다.";
     public static final String USER_NOT_FOUND = "존재하지 않는 유저입니다.";
     public static final String PWD_EXPIRED = "비밀번호를 변경해주세요.";
+    public static final String SAME_PASSWORD = "새 비밀번호가 현재 비밀번호와 동일합니다.";
 
     // 인증
     public static final String CERT_NUM_EXPIRED = "인증번호가 만료되었습니다.";
