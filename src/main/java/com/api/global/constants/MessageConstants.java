@@ -8,7 +8,7 @@ public class MessageConstants {
     
     // 회원
     public static final String MEMBER_NOT_FOUND = "존재하지 않는 아이디입니다.";
-    public static final String PASSWORD_NOT_MATCH = "비밀번호가 일치하지 않습니다.";
+    public static final String PASSWORD_NOT_MATCH = "현재 비밀번호가 올바르지 않습니다.";
     public static final String AUTH_NOT_FOUND = "권한 정보 없음";
     public static final String UUID_NOT_FOUND = "존재하지 않는 유저 식별번호입니다.";
     public static final String MEMBER_INFO_NOT_FOUND = "정보가 존재하지 않습니다.";
