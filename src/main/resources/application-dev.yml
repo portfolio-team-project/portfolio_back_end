@@ -51,4 +51,4 @@ email:
     ji: jisang034@naver.com
     
 hash:
-  secret-key: ${AES_SECRET_KEY}
+  secret-key: ${HASH_SECRET_KEY}
