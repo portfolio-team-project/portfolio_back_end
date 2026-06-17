@@ -88,3 +88,37 @@
 }
 ```
 - **Response:** `true`
+
+### POST /api/member/changePassword
+비밀번호 변경 (로그인 상태)
+- **헤더:** `Authorization: Bearer {accessToken}`
+- **요청:** `{"userId": "string", "currentPassword": "string", "newPassword": "string"}`
+- **응답:** `true`
+- **조건:** 현재 비밀번호와 새 비밀번호가 달라야 함
+
+---
+
+## Admin (관리자)
+
+### GET /api/admin/members
+전체 회원 목록 조회
+- **헤더:** `Authorization: Bearer {accessToken}`
+- **조건:** ADMIN 권한 필요
+
+---
+
+## Contact (문의)
+
+### POST /api/contact
+문의 메일 발송
+- **요청:** `{"name": "string", "email": "string", "message": "string"}`
+- **응답:** `true`
+
+---
+
+## Social Login (소셜 로그인)
+
+### POST /api/auth/social/kakao
+카카오 로그인
+- **요청:** `{"code": "string"}`
+- **응답:** `{"accessToken": "string", "userId": "string", "userName": "string"}`
