@@ -29,6 +29,7 @@ Jenkins를 이용해 CI/CD를 구성하여 홈 서버에 자동 배포하는 것
 
 ## 프로젝트 구조
 
+```
 src/main/java/com/api/
 ├── ApiApplication.java
 ├── domain/
@@ -53,6 +54,7 @@ src/main/java/com/api/
 ├── redis/                  # Redis 서비스
 ├── security/               # JWT 필터, 인증
 └── util/                   # 유틸리티
+```
 
 ---
 
