@@ -17,6 +17,6 @@ public interface MemberService {
 	void changePassword(String userId, String newPassword);
 	void checkPasswordExpired(MemberEntity member);
 	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
-	Page<MemberResponse> findAllMembers(Pageable pageable);
+	Page<MemberResponse> findAllMembers(Pageable pageable,String keyword, String searchType);
 	void withdraw(String userId, String password);
 }

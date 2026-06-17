@@ -172,11 +172,24 @@ public class MemberServiceImpl implements MemberService {
     }
 
 	@Override
-	public Page<MemberResponse> findAllMembers(Pageable pageable) {
-		return memberRepository.findAll(
-			       PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), 
-	                      Sort.by(Sort.Direction.DESC, "createdDate"))
-			   ).map(m -> MemberResponse.builder()
+	public Page<MemberResponse> findAllMembers(Pageable pageable,String keyword,String searchType) {
+		
+		Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), 
+                Sort.by(Sort.Direction.DESC, "createdDate"));
+		
+		Page<MemberEntity> result;
+		
+		if (keyword == null || keyword.isBlank()) {
+	        result = memberRepository.findAll(sortedPage);
+	    } else {
+	        result = switch (searchType) {
+	            case "userName" -> memberRepository.findByUserNameContaining(keyword, sortedPage);
+	            case "email"    -> memberRepository.findByEmailContaining(keyword, sortedPage);
+	            default         -> memberRepository.findByUserIdContaining(keyword, sortedPage);
+	        };
+	    }
+		
+		return result.map(m -> MemberResponse.builder()
 							            .userId(m.getUserId())
 							            .userName(m.getUserName())
 							            .email(m.getEmail())

@@ -33,10 +33,13 @@ public class adminController {
 	private final AdminService adminService;
 	
 	@GetMapping("/member")
-	public ResponseEntity<ApiResponse<Page<MemberResponse>>> memberDataLoad(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+	public ResponseEntity<ApiResponse<Page<MemberResponse>>> memberDataLoad(@RequestParam(defaultValue = "0") int page,
+			                                                                @RequestParam(defaultValue = "10") int size,
+			                                                                @RequestParam(defaultValue = "") String keyword,
+			                                                                @RequestParam(defaultValue = "userId") String searchType){
 		
 		Pageable pageable = PageRequest.of(page,size);
-		Page<MemberResponse> memberList = memberService.findAllMembers(pageable);
+		Page<MemberResponse> memberList = memberService.findAllMembers(pageable,keyword,searchType);
 		
 		return ResponseEntity.ok(ApiResponse.ok(memberList));
 	}
