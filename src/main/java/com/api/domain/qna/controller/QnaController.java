@@ -62,7 +62,7 @@ public class QnaController {
 		
 		Pageable pageable = PageRequest.of(page, 10);
 		
-		Page<QnaListResponse> qnaList = qnaService.getQnaList(pageable, title);
+		Page<QnaListResponse> qnaList = qnaService.getQnaList(pageable, title,"N","Y");
 		
 		return ResponseEntity.ok(ApiResponse.ok(qnaList));
 	}
@@ -71,7 +71,7 @@ public class QnaController {
 	@GetMapping("/detail/{qnaSeq}")
 	public ResponseEntity<ApiResponse<QnaDetailResponse>> detailQna(@PathVariable Long qnaSeq){
 		
-		return ResponseEntity.ok(ApiResponse.ok(qnaService.getQnaDetail(qnaSeq)));
+		return ResponseEntity.ok(ApiResponse.ok(qnaService.getQnaDetail(qnaSeq,"N","Y")));
 	}
 
 }

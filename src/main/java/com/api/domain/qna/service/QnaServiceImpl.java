@@ -65,16 +65,16 @@ public class QnaServiceImpl implements QnaService {
 	}
 
 	@Override
-	public Page<QnaListResponse> getQnaList(Pageable pageable,String title) {
+	public Page<QnaListResponse> getQnaList(Pageable pageable,String title, String delYn, String answerYn) {
 		Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), 
                 Sort.by(Sort.Direction.DESC, "regDt"));
 		
 		Page<QnaEntity> result;
 		
 		if (title == null || title.isBlank()) {
-			result = qnaRepository.findByDelYnAndAnswerYn("N","Y",sortedPage);
+			result = qnaRepository.findByDelYnAndAnswerYn(delYn,answerYn,sortedPage);
 		} else {
-			result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining("N", "Y",title, sortedPage);
+			result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining(delYn, answerYn,title, sortedPage);
 		}
 		
 		return result.map(m -> QnaListResponse.builder()
@@ -90,9 +90,9 @@ public class QnaServiceImpl implements QnaService {
 
 	@Override
 	@Transactional
-	public QnaDetailResponse getQnaDetail(Long qnaSeq) {
+	public QnaDetailResponse getQnaDetail(Long qnaSeq,String delYn, String answerYn) {
 		
-		QnaEntity qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq,"N","Y").orElseThrow(
+		QnaEntity qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq, delYn,answerYn).orElseThrow(
 				    ()-> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
 				);
 		
