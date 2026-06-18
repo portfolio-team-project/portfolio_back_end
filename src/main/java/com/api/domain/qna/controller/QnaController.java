@@ -47,10 +47,10 @@ public class QnaController {
 	@PostMapping("/member")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<ApiResponse<Void>> insertMemberQna(@Valid @RequestBody QnaMemberRequest qnaMemberRquest,
-			                                       @AuthenticationPrincipal UserDetails user,
+			                                       @AuthenticationPrincipal String uuid,
 			                                       HttpServletRequest request) {
 		
-		qnaService.createMemberQna(qnaMemberRquest, user, request);
+		qnaService.createMemberQna(qnaMemberRquest, uuid, request);
 		
 		return ResponseEntity.ok(ApiResponse.ok());
 	}

@@ -52,10 +52,10 @@ public class QnaServiceImpl implements QnaService {
 
 	@Override
 	@Transactional
-	public void createMemberQna(QnaMemberRequest qnaMemberRequest, UserDetails user, HttpServletRequest request) {
+	public void createMemberQna(QnaMemberRequest qnaMemberRequest, String uuid, HttpServletRequest request) {
 		
 		String ipAddr = HttpUtil.getClientIp(request);
-		MemberEntity member = memberService.findByUserId(user.getUsername());
+		MemberEntity member = memberService.findByUuid(uuid);
 		String maskNickname = HtmlSanitizer.maskNickname(member.getUserId());
 		
 		qnaRepository.save(QnaEntity.builder()
