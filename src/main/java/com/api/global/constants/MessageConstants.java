@@ -37,4 +37,6 @@ public class MessageConstants {
     
     //qna
     public static final String SEQ_NOT_FOUND = "QNA 정보를 찾을 수 없습니다.";
+    public static final String ALREADY_ANSWER_EXIST = "이미 답변이 등록된 QNA입니다.";
+    public static final String ALREADY_ANSWER_DELETE = "이미 삭제된 QNA입니다.";
 }

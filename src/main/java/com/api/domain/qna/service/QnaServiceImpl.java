@@ -1,5 +1,8 @@
 package com.api.domain.qna.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,9 +75,17 @@ public class QnaServiceImpl implements QnaService {
 		Page<QnaEntity> result;
 		
 		if (title == null || title.isBlank()) {
-			result = qnaRepository.findByDelYnAndAnswerYn(delYn,answerYn,sortedPage);
+		    if (answerYn == null) {
+		        result = qnaRepository.findByDelYn(delYn, sortedPage);
+		    } else {
+		        result = qnaRepository.findByDelYnAndAnswerYn(delYn, answerYn, sortedPage);
+		    }
 		} else {
-			result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining(delYn, answerYn,title, sortedPage);
+		    if (answerYn == null) {
+		        result = qnaRepository.findByDelYnAndTitleContaining(delYn, title, sortedPage);
+		    } else {
+		        result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining(delYn, answerYn, title, sortedPage);
+		    }
 		}
 		
 		return result.map(m -> QnaListResponse.builder()
@@ -90,13 +101,23 @@ public class QnaServiceImpl implements QnaService {
 
 	@Override
 	@Transactional
-	public QnaDetailResponse getQnaDetail(Long qnaSeq,String delYn, String answerYn) {
+	public QnaDetailResponse getQnaDetail(Long qnaSeq,String delYn, String answerYn,boolean increaseView) {
 		
-		QnaEntity qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq, delYn,answerYn).orElseThrow(
-				    ()-> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
-				);
+		QnaEntity qnaData;
 		
-	    qnaData.increaseViewCnt();
+		if (delYn == null && answerYn == null) {
+		    qnaData = qnaRepository.findById(qnaSeq).orElseThrow(
+		        () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+		    );
+		} else {
+		    qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq, delYn, answerYn).orElseThrow(
+		        () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+		    );
+		}
+		
+	    if (increaseView) {
+	    	qnaData.increaseViewCnt();
+	    }
 	    
 		return QnaDetailResponse.builder()
 				                .qnaSeq(qnaData.getQnaSeq())
@@ -110,6 +131,51 @@ public class QnaServiceImpl implements QnaService {
 				                .viewCnt(qnaData.getViewCnt())
 				                .isMember(qnaData.getMember() != null)
 				                .build();
+	}
+	
+	@Override
+	public long countThisMonthQnaAll(String delYn) {
+		
+		LocalDateTime st = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+		LocalDateTime ed = LocalDateTime.now();
+		
+		return qnaRepository.countByDelYnAndRegDtBetween(delYn,st,ed);
+	}
+
+	@Override
+	@Transactional
+	public void insertQnaAnswer(Long qnaSeq, String answer) {
+		
+		
+		QnaEntity qnaData = qnaRepository.findByQnaSeq(qnaSeq).orElseThrow(
+				  () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+				);
+		
+		if ( "Y".equals(qnaData.getAnswerYn()) ) {
+			throw new BusinessException(MessageConstants.ALREADY_ANSWER_EXIST);
+		}
+		
+		qnaData.registerAnswer(answer);
+		
+		qnaRepository.save(qnaData);
+		
+	}
+
+	@Override
+	@Transactional
+	public void deleteQnaData(Long qnaSeq) {
+		
+		QnaEntity qnaData = qnaRepository.findByQnaSeq(qnaSeq).orElseThrow(
+				  () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+				);
+		
+		if ( "Y".equals(qnaData.getDelYn()) ) {
+			throw new BusinessException(MessageConstants.ALREADY_ANSWER_DELETE);
+		}
+		
+		qnaData.softDelete();
+		
+		qnaRepository.save(qnaData);
 	}
 
 }

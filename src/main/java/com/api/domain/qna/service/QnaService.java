@@ -15,6 +15,9 @@ public interface QnaService {
 	
 	void createGuestQna(QnaRequest qnaRequest,HttpServletRequest request);
 	void createMemberQna(QnaMemberRequest qnaMemberRequest, UserDetails user, HttpServletRequest request);
-	Page<QnaListResponse> getQnaList(Pageable pageable, String title, String DelYn, String answerYn);
-	QnaDetailResponse getQnaDetail(Long qnaSeq, String delYn, String answerYn);
+	Page<QnaListResponse> getQnaList(Pageable pageable, String title, String delYn, String answerYn);
+	QnaDetailResponse getQnaDetail(Long qnaSeq, String delYn, String answerYn,boolean increaseView);
+	long countThisMonthQnaAll(String delYn);
+	void insertQnaAnswer(Long qnaSeq, String answer);
+	void deleteQnaData(Long qnaSeq);
 }

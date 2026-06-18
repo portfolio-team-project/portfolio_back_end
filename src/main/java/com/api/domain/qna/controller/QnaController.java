@@ -71,7 +71,7 @@ public class QnaController {
 	@GetMapping("/detail/{qnaSeq}")
 	public ResponseEntity<ApiResponse<QnaDetailResponse>> detailQna(@PathVariable Long qnaSeq){
 		
-		return ResponseEntity.ok(ApiResponse.ok(qnaService.getQnaDetail(qnaSeq,"N","Y")));
+		return ResponseEntity.ok(ApiResponse.ok(qnaService.getQnaDetail(qnaSeq, "N", "Y", true)));
 	}
 
 }
