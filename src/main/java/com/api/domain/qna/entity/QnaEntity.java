@@ -52,9 +52,6 @@ public class QnaEntity {
 	@Column(name="del_yn", length = 1)
 	private String delYn;
 	
-	@Column(name="qna_pwd", length = 100)
-	private String qnaPwd;
-	
 	@Column(name="answer", length = 2000)
 	private String answer;
 	

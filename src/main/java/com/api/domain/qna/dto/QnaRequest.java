@@ -17,6 +17,4 @@ public class QnaRequest {
 	@NotBlank(message = "내용은 필수값입니다.")
 	private String content;
 	
-	@NotBlank(message = "비밀번호는 필수값입니다.")
-	private String qnaPwd;
 }

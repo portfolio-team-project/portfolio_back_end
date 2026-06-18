@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +31,11 @@ public class QnaServiceImpl implements QnaService {
 
 	private final MemberService memberService;
 	private final QnaRepository qnaRepository;
-	private final PasswordEncoder passwordEncoder;
 	
 	@Override
 	@Transactional
 	public void createGuestQna(QnaRequest qnaRequest, HttpServletRequest request) {
 		
-		String pwd = passwordEncoder.encode(qnaRequest.getQnaPwd());
 		String ipAddr = HttpUtil.getClientIp(request);
 		String maskNickname = HtmlSanitizer.maskNickname(HtmlSanitizer.sanitize(qnaRequest.getNickname()));
 		
@@ -46,7 +43,6 @@ public class QnaServiceImpl implements QnaService {
 				                    .title(HtmlSanitizer.sanitize(qnaRequest.getTitle()))
 				                    .nickname(maskNickname)
 				                    .content(HtmlSanitizer.sanitize(qnaRequest.getContent()))
-				                    .qnaPwd(pwd)
 				                    .ipAddr(ipAddr)
 				                    .build());
 	}
@@ -76,9 +72,9 @@ public class QnaServiceImpl implements QnaService {
 		Page<QnaEntity> result;
 		
 		if (title == null || title.isBlank()) {
-			result = qnaRepository.findByDelYn("N",sortedPage);
+			result = qnaRepository.findByDelYnAndAnswerYn("N","Y",sortedPage);
 		} else {
-			result = qnaRepository.findByDelYnAndTitleContaining("N", title, sortedPage);
+			result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining("N", "Y",title, sortedPage);
 		}
 		
 		return result.map(m -> QnaListResponse.builder()
@@ -96,9 +92,7 @@ public class QnaServiceImpl implements QnaService {
 	@Transactional
 	public QnaDetailResponse getQnaDetail(Long qnaSeq) {
 		
-		
-		
-		QnaEntity qnaData = qnaRepository.findByQnaSeqAndDelYn(qnaSeq,"N").orElseThrow(
+		QnaEntity qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq,"N","Y").orElseThrow(
 				    ()-> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
 				);
 		
