@@ -40,12 +40,12 @@ public class QnaServiceImpl implements QnaService {
 		
 		String pwd = passwordEncoder.encode(qnaRequest.getQnaPwd());
 		String ipAddr = HttpUtil.getClientIp(request);
-		String maskNickname = HtmlSanitizer.maskNickname(qnaRequest.getNickname());
+		String maskNickname = HtmlSanitizer.maskNickname(HtmlSanitizer.sanitize(qnaRequest.getNickname()));
 		
 		qnaRepository.save(QnaEntity.builder()
-				                    .title(qnaRequest.getTitle())
+				                    .title(HtmlSanitizer.sanitize(qnaRequest.getTitle()))
 				                    .nickname(maskNickname)
-				                    .content(qnaRequest.getContent())
+				                    .content(HtmlSanitizer.sanitize(qnaRequest.getContent()))
 				                    .qnaPwd(pwd)
 				                    .ipAddr(ipAddr)
 				                    .build());
@@ -60,8 +60,8 @@ public class QnaServiceImpl implements QnaService {
 		String maskNickname = HtmlSanitizer.maskNickname(member.getUserId());
 		
 		qnaRepository.save(QnaEntity.builder()
-				                    .title(qnaMemberRequest.getTitle())
-				                    .content(qnaMemberRequest.getContent())
+				                    .title(HtmlSanitizer.sanitize(qnaMemberRequest.getTitle()))
+				                    .content(HtmlSanitizer.sanitize(qnaMemberRequest.getContent()))
 				                    .nickname(maskNickname)
 				                    .member(member)
 				                    .ipAddr(ipAddr)
