@@ -198,4 +198,11 @@ public class MemberServiceImpl implements MemberService {
 							            .build());
 	}
 
+	@Override
+	public MemberEntity findByUserId(String userId) {
+		return memberRepository.findById(userId).orElseThrow(
+				() -> new BusinessException(MessageConstants.MEMBER_INFO_NOT_FOUND)
+				);
+	}
+
 }

@@ -67,6 +67,7 @@ public class SecurityConfig {
                     "/api/accession/verifyNum",
                     "/api/accession/join",
                     "/api/mail/**",
+                    "/api/qna/**",
                     "/health"
                 ).permitAll()
                 .anyRequest().authenticated()

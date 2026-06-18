@@ -34,4 +34,7 @@ public class MessageConstants {
     public static final String REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
     public static final String REFRESH_TOKEN_INVALID = "invalid refresh token";
     public static final String REFRESH_TOKEN_MISMATCH = "refresh token mismatch";
+    
+    //qna
+    public static final String SEQ_NOT_FOUND = "QNA 정보를 찾을 수 없습니다.";
 }
