@@ -61,7 +61,7 @@ public class LoginController {
     	    memberService.checkPasswordExpired(member);
     		
     		String isRole = memberService.getRole(member);
-    		String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
+    		boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? false:true;
     
     	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
     	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
@@ -106,7 +106,7 @@ public class LoginController {
 			loginService.saveLog(member, httpRequest, "Y", null);
 			
 			String isRole = memberService.getRole(member);
-			String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
+			boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? false:true;
 		    
     	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
     	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
