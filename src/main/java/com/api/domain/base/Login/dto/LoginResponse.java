@@ -1,5 +1,7 @@
 package com.api.domain.base.Login.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,5 +15,7 @@ public class LoginResponse {
 	private String userId;
 	private String userName;
 	private String role;
+	
+	@JsonProperty("isSocial")
 	private boolean isSocial;
 }
