@@ -1,6 +1,7 @@
 package com.api.domain.base.Member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +52,23 @@ public class MemberController {
 		cookie.setMaxAge(0);
 		response.addCookie(cookie);
 
+		return ResponseEntity.ok(ApiResponse.ok(null));
+	}
+	
+	// 소셜 회원탈퇴
+	@PostMapping("/socialWithdraw")
+	public ResponseEntity<ApiResponse<Void>> socialWithdraw(@AuthenticationPrincipal String uuid,
+			                                     HttpServletResponse response) {
+		
+		memberService.socialWithdraw(uuid);
+		
+		Cookie cookie = new Cookie("refreshToken", null);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/api/auth/refresh");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+		
 		return ResponseEntity.ok(ApiResponse.ok(null));
 	}
 	

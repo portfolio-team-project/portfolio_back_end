@@ -20,4 +20,5 @@ public interface MemberService {
 	Page<MemberResponse> findAllMembers(Pageable pageable,String keyword, String searchType);
 	void withdraw(String userId, String password);
 	MemberEntity findByUserId(String userId);
+	void socialWithdraw(String uuid);
 }

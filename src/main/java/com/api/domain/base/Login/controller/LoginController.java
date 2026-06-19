@@ -61,6 +61,7 @@ public class LoginController {
     	    memberService.checkPasswordExpired(member);
     		
     		String isRole = memberService.getRole(member);
+    		String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
     
     	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
     	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
@@ -77,7 +78,7 @@ public class LoginController {
     
     	    response.addCookie(cookie);
     
-    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole)));
+    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole, isSocial)));
 	    
 	    } catch (Exception e) {
 	        if (MessageConstants.PWD_EXPIRED.equals(e.getMessage())) {
@@ -105,6 +106,7 @@ public class LoginController {
 			loginService.saveLog(member, httpRequest, "Y", null);
 			
 			String isRole = memberService.getRole(member);
+			String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
 		    
     	    String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
     	    String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
@@ -121,7 +123,7 @@ public class LoginController {
     
     	    response.addCookie(cookie);
     
-    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole)));
+    	    return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken,member.getUserId(),member.getUserName(),isRole,isSocial)));
 		
 		} catch (Exception e) {
 			// 탈퇴한 계정으로 들어올때

@@ -77,6 +77,7 @@ public class AuthController {
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
 	    MemberEntity member = memberService.findByUuid(uuid);
 	    String isRole = memberService.getRole(member);
+	    String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
 	    
 	    // 새 access token 발급
 	    String newAccessToken =
@@ -100,7 +101,7 @@ public class AuthController {
 	    response.addCookie(cookie);
 	    
 		
-		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(newAccessToken,member.getUserId(),member.getUserName(),isRole)));
+		return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(newAccessToken,member.getUserId(),member.getUserName(),isRole,isSocial)));
 	}
 	
 	@PostMapping("/social/{provider}")
@@ -125,6 +126,7 @@ public class AuthController {
 	    loginService.saveLog(member, httpRequest, "Y", null);
         
         String isRole = memberService.getRole(member);
+        String isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? "N":"Y";
 
         String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
         String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
@@ -141,6 +143,6 @@ public class AuthController {
 
         response.addCookie(cookie);
 	    
-        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, member.getUserId(), member.getUserName(),isRole)));
+        return ResponseEntity.ok(ApiResponse.ok(new LoginResponse(accessToken, member.getUserId(), member.getUserName(),isRole,isSocial)));
     }
 }
