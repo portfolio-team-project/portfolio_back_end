@@ -77,7 +77,7 @@ public class AuthController {
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
 	    MemberEntity member = memberService.findByUuid(uuid);
 	    String isRole = memberService.getRole(member);
-	    boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? false:true;
+	    boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? true:false;
 	    
 	    // 새 access token 발급
 	    String newAccessToken =
@@ -126,7 +126,7 @@ public class AuthController {
 	    loginService.saveLog(member, httpRequest, "Y", null);
         
         String isRole = memberService.getRole(member);
-        boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? false:true;
+        boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? true:false;
 
         String accessToken = jwtProvider.createToken(member.getUuid(),isRole);
         String refreshToken = jwtProvider.createRefreshToken(member.getUuid());
