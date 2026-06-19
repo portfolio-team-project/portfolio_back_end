@@ -2,6 +2,9 @@ package com.api.domain.qna.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.api.domain.base.Member.entity.MemberEntity;
 
 import jakarta.persistence.Column;
@@ -59,7 +62,8 @@ public class QnaEntity {
 	private String answerYn;
 	
 	@ManyToOne
-	@JoinColumn(name="user_id")
+	@JoinColumn(name = "user_id", nullable = true)
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private MemberEntity member;
 	
 	@Column(name="answer_dt")
