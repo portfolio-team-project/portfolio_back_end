@@ -1,12 +1,16 @@
 package com.api.domain.base.Member.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.api.domain.auth.entity.UserAuthEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -87,6 +91,11 @@ public class MemberEntity {
 
 	@Column(name="marketing_agree_date")
 	private LocalDateTime marketingAgreeDate;
+	
+	//cascade 권한 삭제
+	@OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<UserAuthEntity> userAuthList;
+
 
 	public void updatePassword(String password) {
 	    this.password = password;
