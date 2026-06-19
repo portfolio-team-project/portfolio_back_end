@@ -40,11 +40,10 @@ public class QnaServiceImpl implements QnaService {
 	public void createGuestQna(QnaRequest qnaRequest, HttpServletRequest request) {
 		
 		String ipAddr = HttpUtil.getClientIp(request);
-		String maskNickname = HtmlSanitizer.maskNickname(HtmlSanitizer.sanitize(qnaRequest.getNickname()));
 		
 		qnaRepository.save(QnaEntity.builder()
 				                    .title(HtmlSanitizer.sanitize(qnaRequest.getTitle()))
-				                    .nickname(maskNickname)
+				                    .nickname(HtmlSanitizer.sanitize(qnaRequest.getNickname()))
 				                    .content(HtmlSanitizer.sanitize(qnaRequest.getContent()))
 				                    .ipAddr(ipAddr)
 				                    .build());
@@ -56,12 +55,11 @@ public class QnaServiceImpl implements QnaService {
 		
 		String ipAddr = HttpUtil.getClientIp(request);
 		MemberEntity member = memberService.findByUuid(uuid);
-		String maskNickname = HtmlSanitizer.maskNickname(member.getUserId());
 		
 		qnaRepository.save(QnaEntity.builder()
 				                    .title(HtmlSanitizer.sanitize(qnaMemberRequest.getTitle()))
 				                    .content(HtmlSanitizer.sanitize(qnaMemberRequest.getContent()))
-				                    .nickname(maskNickname)
+				                    .nickname(HtmlSanitizer.sanitize(member.getUserId()))
 				                    .member(member)
 				                    .ipAddr(ipAddr)
 				                    .build());
@@ -91,7 +89,7 @@ public class QnaServiceImpl implements QnaService {
 		return result.map(m -> QnaListResponse.builder()
 				                              .title(m.getTitle())
 				                              .qnaSeq(m.getQnaSeq())
-				                              .nickname(m.getNickname())
+				                              .nickname(HtmlSanitizer.maskNickname(m.getNickname()))
 				                              .regDt(m.getRegDt())
 				                              .answerYn(m.getAnswerYn())
 				                              .viewCnt(m.getViewCnt())
@@ -121,7 +119,7 @@ public class QnaServiceImpl implements QnaService {
 	    
 		return QnaDetailResponse.builder()
 				                .qnaSeq(qnaData.getQnaSeq())
-				                .nickname(qnaData.getNickname())
+				                .nickname(HtmlSanitizer.maskNickname(qnaData.getNickname()))
 				                .title(qnaData.getTitle())
 				                .content(qnaData.getContent())
 				                .regDt(qnaData.getRegDt())
