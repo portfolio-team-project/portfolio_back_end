@@ -212,13 +212,7 @@ public class MemberServiceImpl implements MemberService {
 		MemberEntity member = memberRepository.findByUuid(uuid)
                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
 		
-		if ("N".equals(member.getStatus())) {
-			throw new BusinessException(MessageConstants.ALREADY_WITHDRAW);
-		}
-		
-		member.withdraw();
-		
-		memberRepository.save(member);
+		memberRepository.delete(member);
 	}
 
 }
