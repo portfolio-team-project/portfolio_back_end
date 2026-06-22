@@ -1,6 +1,7 @@
 package com.api.domain.base.Member.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -14,8 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.domain.base.Member.dto.ChangePasswordRequest;
 import com.api.domain.base.Member.dto.MemberRequest;
 import com.api.domain.base.Member.dto.WithdrawRequest;
+import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.global.common.ApiResponse;
+import com.api.global.constants.MessageConstants;
+import com.api.global.exception.BusinessException;
+import com.api.global.redis.LoginFailService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	
 	private final MemberService memberService;
+	private final LoginFailService loginFailService;
 	
 	// 회원가입
 	@PostMapping("/join")
@@ -108,11 +114,41 @@ public class MemberController {
 	 * 비밀번호 변경
 	 * */
 	@PostMapping("/changePassword")
-	public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequest request) {
+	public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody ChangePasswordRequest request,
+			                                      @AuthenticationPrincipal String uuid,
+			                                      HttpServletResponse response) {
+		
+		String userId = ( uuid != null && !"anonymousUser".equals(uuid) )
+		        ? memberService.findByUuid(uuid).getUserId() // 로그인 비밀번호 변경
+		        : request.getUserId(); // 3개월 비밀번호 변경
+		
+		// 1. 잠금 체크 (5회 이상 실패 시 차단)
+	    int failCount = loginFailService.getChgPwdFailCount(userId);
+	    if (failCount >= 5) {
+	        boolean isLoggedIn = uuid != null && !"anonymousUser".equals(uuid);
+	        throw new BusinessException(
+	            isLoggedIn ? MessageConstants.PWD_CHG_LOCKED          // 로그아웃
+	                       : MessageConstants.PWD_CHG_LOCKED_EXPIRED  // 비밀번호 찾기 유도
+	        );
+	    }
 	    
-	    memberService.verifyAndChangePassword(request.getUserId(), request.getCurrentPassword(), request.getNewPassword());
-	    
-	    return ResponseEntity.ok(true);
+		try {
+		    memberService.verifyAndChangePassword(userId, request.getCurrentPassword(), request.getNewPassword());
+		    
+		    loginFailService.clearChgPwdFailCount(userId);
+		    
+		} catch (BusinessException e) {
+		    // 현재 비번 틀린 경우만 카운트 증가
+		    if (MessageConstants.PASSWORD_NOT_MATCH.equals(e.getMessage())) {
+		        loginFailService.increaseChgPwdFailCount(userId);
+		    }
+		    throw e;
+		} catch (Exception e) {
+		    // 예상치 못한 에러
+		    throw new BusinessException(MessageConstants.PWD_CHG_FAILED);
+		}
+		
+	    return ResponseEntity.ok(ApiResponse.ok());
 	}
 	
 	// ID 중복확인

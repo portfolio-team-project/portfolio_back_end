@@ -16,6 +16,7 @@ public class MessageConstants {
     public static final String PWD_EXPIRED = "비밀번호를 변경해주세요.";
     public static final String SAME_PASSWORD = "새 비밀번호가 현재 비밀번호와 동일합니다.";
     public static final String ALREADY_WITHDRAW = "이미 탈퇴한 회원입니다.";
+    public static final String PWD_CHG_FAILED = "비밀번호 변경에 실패했습니다.";
 
     // 인증
     public static final String CERT_NUM_EXPIRED = "인증번호가 만료되었습니다.";
@@ -24,6 +25,9 @@ public class MessageConstants {
     public static final String CERT_NOT_VERIFIED = "인증이 완료되지 않았습니다.";
     public static final String CHECK_EMAIL_ID = "아이디 또는 이메일을 다시 한번 확인해주세요.";
     public static final String LOCKED_ID = "계정이 제한되었습니다. 관리자한테 문의해주세요.";
+    public static final String PWD_CHG_LOCKED = "비밀번호를 5회 이상 잘못 입력하였습니다. 보안을 위해 로그아웃합니다.";
+    public static final String PWD_CHG_LOCKED_EXPIRED = "비밀번호를 5회 이상 잘못 입력하였습니다. 비밀번호 찾기를 이용해주세요.";
+
     
     // 회원가입
     public static final String USER_ID_DUPLICATED = "이미 사용 중인 아이디입니다.";

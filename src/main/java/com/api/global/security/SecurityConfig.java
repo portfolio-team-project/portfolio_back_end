@@ -63,6 +63,7 @@ public class SecurityConfig {
                     "/api/member/findPassword",
                     "/api/member/verifyNum",
                     "/api/member/resetPassword",
+                    "/api/member/changePassword",
                     "/api/accession/sendEmailAuth",
                     "/api/accession/verifyNum",
                     "/api/accession/join",

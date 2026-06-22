@@ -37,4 +37,29 @@ public class LoginFailService {
 
 	    redisTemplate.delete("LOGIN_FAIL:" + username);
 	}
+	
+	public void increaseChgPwdFailCount(String username) {
+
+	    String key = "CHG_PWD_FAIL:" + username;
+
+	    Long count = redisTemplate.opsForValue().increment(key);
+
+	    // 첫 실패일 때만 만료시간 설정
+	    if (count != null && count == 1) {
+	        redisTemplate.expire(key, 30, TimeUnit.MINUTES);
+	        }
+	}
+	
+	public int getChgPwdFailCount(String username) {
+
+	    String value = redisTemplate.opsForValue()
+	                                .get("CHG_PWD_FAIL:" + username);
+
+	    return value == null ? 0 : Integer.parseInt(value);
+	}
+	
+	public void clearChgPwdFailCount(String username) {
+
+	    redisTemplate.delete("CHG_PWD_FAIL:" + username);
+	}
 }

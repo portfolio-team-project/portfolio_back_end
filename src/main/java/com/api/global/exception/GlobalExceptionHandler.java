@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.api.global.common.ApiResponse;
+import com.api.global.constants.MessageConstants;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -66,8 +67,11 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<?>> handleBusiness(BusinessException e) {
+        boolean isLocked = MessageConstants.PWD_CHG_LOCKED.equals(e.getMessage()) ||
+                           MessageConstants.PWD_CHG_LOCKED_EXPIRED.equals(e.getMessage());
+        HttpStatus status = isLocked ? HttpStatus.LOCKED : HttpStatus.BAD_REQUEST;
         return ResponseEntity
-                .badRequest()
+                .status(status)
                 .body(new ApiResponse<>(false, e.getMessage(), e.getData()));
     }
 
