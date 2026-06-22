@@ -76,6 +76,11 @@ public class AuthController {
 	    
 	    // 권한 조회 ( 추후 db 붙으면 추가 필요 )
 	    MemberEntity member = memberService.findByUuid(uuid);
+	    
+	    if ("N".equals(member.getStatus())) {
+	    	throw new BusinessException(MessageConstants.LOCKED_ID);
+	    }
+	    
 	    String isRole = memberService.getRole(member);
 	    boolean isSocial = (member.getKakaoId() != null && !member.getKakaoId().isEmpty()) ? true:false;
 	    

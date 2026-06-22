@@ -23,6 +23,7 @@ public class MessageConstants {
     public static final String EMAIL_SEND_FAILED = "이메일 발송에 실패했습니다.";
     public static final String CERT_NOT_VERIFIED = "인증이 완료되지 않았습니다.";
     public static final String CHECK_EMAIL_ID = "아이디 또는 이메일을 다시 한번 확인해주세요.";
+    public static final String LOCKED_ID = "계정이 제한되었습니다. 관리자한테 문의해주세요.";
     
     // 회원가입
     public static final String USER_ID_DUPLICATED = "이미 사용 중인 아이디입니다.";

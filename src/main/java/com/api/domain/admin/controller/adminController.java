@@ -110,4 +110,11 @@ public class adminController {
 		
 		return ResponseEntity.ok(ApiResponse.ok());
 	}
+	
+	@PostMapping("/deleteId")
+	public ResponseEntity<Boolean> deleteIdData(@RequestParam(required = true) String userId) {
+		
+		
+		return ResponseEntity.ok(null);
+	}
 }

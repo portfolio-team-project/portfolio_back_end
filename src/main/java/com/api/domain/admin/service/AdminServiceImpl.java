@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.domain.base.Member.dto.MemberDetailResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
-import com.api.domain.base.Member.repository.MemberRepository;
-import com.api.global.constants.MessageConstants;
-import com.api.global.exception.BusinessException;
+import com.api.domain.base.Member.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
-	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 	
 	@Override
 	public long countThisMonthMembers() {
@@ -25,13 +23,12 @@ public class AdminServiceImpl implements AdminService {
 		LocalDateTime st = LocalDate.now().withDayOfMonth(1).atStartOfDay();
 		LocalDateTime ed = LocalDateTime.now();
 		
-		return memberRepository.countByCreatedDateBetween(st,ed);
+		return memberService.countByCreatedDateBetween(st,ed);
 	}
 
 	@Override
 	public MemberDetailResponse findMemberDetail(String userId) {
-		MemberEntity member = memberRepository.findByUserId(userId)
-				                              .orElseThrow( () -> new BusinessException(MessageConstants.MEMBER_INFO_NOT_FOUND) );
+		MemberEntity member = memberService.findByUserId(userId);
 		
 		return MemberDetailResponse.builder()
 				                   .userId(member.getUserId())
@@ -44,6 +41,12 @@ public class AdminServiceImpl implements AdminService {
 				                   .department(member.getDepartment())
 				                   .work(member.getWork())
 				                   .build();
+	}
+
+	@Override
+	public void deleteUserId(String userId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

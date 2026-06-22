@@ -215,4 +215,9 @@ public class MemberServiceImpl implements MemberService {
 		memberRepository.delete(member);
 	}
 
+	@Override
+	public long countByCreatedDateBetween(LocalDateTime start, LocalDateTime end) {
+		return memberRepository.countByCreatedDateBetween(start, end);
+	}
+
 }
