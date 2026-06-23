@@ -45,7 +45,15 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public void deleteUserId(String userId) {
-		// TODO Auto-generated method stub
+		
+		MemberEntity member = memberService.findByUserId(userId);
+		
+		if ( member.getKakaoId() != null && !member.getKakaoId().isEmpty() ) {
+			memberService.socialWithdraw(member.getUuid());
+		}
+		else {
+			memberService.withdraw(member.getUuid(), member.getPassword());;
+		}
 		
 	}
 

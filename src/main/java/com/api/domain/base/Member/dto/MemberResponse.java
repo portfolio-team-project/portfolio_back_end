@@ -2,6 +2,8 @@ package com.api.domain.base.Member.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,6 +22,9 @@ public class MemberResponse {
 		private String cpName;
 		//이메일
 		private String email;
+		//소셜여부
+		@JsonProperty("isSocial")
+		private String isSocial;
 		//생성일
 		private LocalDateTime createdDate;
 

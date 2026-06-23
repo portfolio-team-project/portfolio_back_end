@@ -195,6 +195,7 @@ public class MemberServiceImpl implements MemberService {
 							            .email(m.getEmail())
 							            .status(m.getStatus())
 							            .createdDate(m.getCreatedDate())
+							            .isSocial( m.getKakaoId() != null && !m.getKakaoId().isEmpty() ? "Y" : "N" )
 							            .build());
 	}
 
@@ -213,6 +214,8 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
 		
 		memberRepository.delete(member);
+		
+		redisService.deleteRefreshToken(member.getUuid());
 	}
 
 	@Override
