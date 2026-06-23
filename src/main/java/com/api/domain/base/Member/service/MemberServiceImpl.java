@@ -222,5 +222,18 @@ public class MemberServiceImpl implements MemberService {
 	public long countByCreatedDateBetween(LocalDateTime start, LocalDateTime end) {
 		return memberRepository.countByCreatedDateBetween(start, end);
 	}
+	
+	// 관리자 삭제
+	@Override
+	@Transactional
+	public void adminWithdraw(String uuid) {
+	    MemberEntity member = memberRepository.findByUuid(uuid)
+	            .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
+
+	    member.withdraw();
+	    memberRepository.save(member);
+
+	    redisService.deleteRefreshToken(member.getUuid());
+	}
 
 }

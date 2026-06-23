@@ -3,6 +3,7 @@ package com.api.domain.admin.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.api.domain.base.Member.dto.MemberDetailResponse;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService {
 
 	private final MemberService memberService;
+	private final PasswordEncoder passwordEncoder;
 	
 	@Override
 	public long countThisMonthMembers() {
@@ -52,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
 			memberService.socialWithdraw(member.getUuid());
 		}
 		else {
-			memberService.withdraw(member.getUuid(), member.getPassword());;
+			memberService.adminWithdraw(member.getUuid());
 		}
 		
 	}

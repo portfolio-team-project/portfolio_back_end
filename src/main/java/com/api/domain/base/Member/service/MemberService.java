@@ -24,4 +24,5 @@ public interface MemberService {
 	MemberEntity findByUserId(String userId);
 	void socialWithdraw(String uuid);
 	long countByCreatedDateBetween(LocalDateTime start, LocalDateTime end);
+	void adminWithdraw(String uuid);
 }
