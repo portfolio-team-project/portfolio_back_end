@@ -27,6 +27,7 @@ public class MessageConstants {
     public static final String LOCKED_ID = "계정이 제한되었습니다. 관리자한테 문의해주세요.";
     public static final String PWD_CHG_LOCKED = "비밀번호를 5회 이상 잘못 입력하였습니다. 보안을 위해 로그아웃합니다.";
     public static final String PWD_CHG_LOCKED_EXPIRED = "비밀번호를 5회 이상 잘못 입력하였습니다. 비밀번호 찾기를 이용해주세요.";
+    public static final String CHG_PWD_TEMP_PWD = "임시비밀번호입니다. 보안을 위해 비밀번호 변경 페이지로 이동합니다.";
 
     
     // 회원가입

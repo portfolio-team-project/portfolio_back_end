@@ -51,6 +51,8 @@ public class LoginController {
 	    MemberEntity member;
 	    try {
 	    	member = memberService.login(request.getUserId(), request.getPassword());
+	    	
+	    	memberService.checkTempPwd(member);
 	    
     	    //성공 시 카운트 초기화
     	    loginFailService.clearLoginFailCount(request.getUserId());
@@ -86,6 +88,9 @@ public class LoginController {
 	        }
 			// 탈퇴한 계정으로 들어올때
 	        if (MessageConstants.MEMBER_WITHDRAWN.equals(e.getMessage())) {
+	            throw (BusinessException)e;
+	        }
+	        if (MessageConstants.CHG_PWD_TEMP_PWD.equals(e.getMessage())) {
 	            throw (BusinessException)e;
 	        }
             // 실패 시 카운트 증가

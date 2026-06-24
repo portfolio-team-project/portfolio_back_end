@@ -25,4 +25,6 @@ public interface MemberService {
 	void socialWithdraw(String uuid);
 	long countByCreatedDateBetween(LocalDateTime start, LocalDateTime end);
 	void adminWithdraw(String uuid);
+	void checkTempPwd(MemberEntity member);
+	void changeTempPwd(MemberEntity member, String tempPwd);
 }

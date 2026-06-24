@@ -19,11 +19,16 @@ import com.api.domain.admin.dto.adminRequest;
 import com.api.domain.admin.service.AdminService;
 import com.api.domain.base.Member.dto.MemberDetailResponse;
 import com.api.domain.base.Member.dto.MemberResponse;
+import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
 import com.api.domain.qna.dto.QnaDetailResponse;
 import com.api.domain.qna.dto.QnaListResponse;
 import com.api.domain.qna.service.QnaService;
 import com.api.global.common.ApiResponse;
+import com.api.global.constants.MessageConstants;
+import com.api.global.exception.BusinessException;
+import com.api.global.util.MailUtil;
+import com.api.global.util.TempPwdUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +41,7 @@ public class adminController {
 	private final MemberService memberService;
 	private final AdminService adminService;
 	private final QnaService qnaService;
+	private final MailUtil mailUtil;
 	
 	@GetMapping("/member")
 	public ResponseEntity<ApiResponse<Page<MemberResponse>>> memberDataLoad(@RequestParam(defaultValue = "0") int page,
@@ -115,6 +121,24 @@ public class adminController {
 	public ResponseEntity<ApiResponse<Void>> deleteIdData(@RequestParam(required = true) String userId) {
 		
 		adminService.deleteUserId(userId);
+		
+		return ResponseEntity.ok(ApiResponse.ok());
+	}
+	
+	@PostMapping("/sendTempPwd")
+	public ResponseEntity<ApiResponse<Void>> sendTempPwd(@RequestParam(required = true) String userId) {
+		
+		MemberEntity member = memberService.findByUserId(userId);
+		
+		String tempPwd = TempPwdUtil.generate();
+		
+		try {
+			mailUtil.sendTempPwd(member, tempPwd);
+		} catch (Exception e) {
+			throw new BusinessException(MessageConstants.EMAIL_SEND_FAILED);
+		}
+		
+		memberService.changeTempPwd(member, tempPwd);
 		
 		return ResponseEntity.ok(ApiResponse.ok());
 	}

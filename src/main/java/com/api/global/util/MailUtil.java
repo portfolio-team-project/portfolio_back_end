@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.global.constants.MailConstant;
 
 import jakarta.mail.internet.MimeMessage;
@@ -74,6 +75,23 @@ public class MailUtil {
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
         helper.setTo(toEmail);
         helper.setSubject("[포트폴리오] " + fromName + "님의 연락");
+        helper.setText(content,true);
+        javaMailSender.send(message);
+    }
+    
+    public void sendTempPwd(MemberEntity member, String tempPwd) throws Exception {
+    	ClassPathResource resource = new ClassPathResource("templates/Email_Chg_Pwd_template.html");
+    	
+    	String template = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        String content = template
+                .replace("{{userName}}", member.getUserName())
+                .replace("{{tempPassword}}", tempPwd)
+                .replace("{{loginUrl}}", MailConstant.LOGIN_URL);
+        
+    	MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setTo(member.getEmail());
+        helper.setSubject("[포트폴리오] 임시비밀번호");
         helper.setText(content,true);
         javaMailSender.send(message);
     }

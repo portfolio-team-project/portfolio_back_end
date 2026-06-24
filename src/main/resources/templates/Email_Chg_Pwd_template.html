@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>임시 비밀번호 안내</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f5; font-family:'Noto Sans KR', Apple SD Gothic Neo, sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5; padding:40px 0;">
+    <tr>
+      <td align="center">
+
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+          <!-- 헤더 -->
+          <tr>
+            <td style="background-color:#111111; padding:32px 40px; text-align:center;">
+              <span style="font-size:22px; font-weight:800; color:#ffffff; letter-spacing:2px;">LEE × JI</span>
+            </td>
+          </tr>
+
+          <!-- 본문 -->
+          <tr>
+            <td style="padding:40px 40px 20px;">
+              <p style="margin:0 0 8px; font-size:13px; color:#888888;">안녕하세요,</p>
+              <h2 style="margin:0 0 24px; font-size:20px; font-weight:700; color:#111111; line-height:1.4;">
+                임시 비밀번호가 발급되었습니다
+              </h2>
+              <p style="margin:0 0 24px; font-size:14px; color:#444444; line-height:1.8;">
+                <strong>{{userName}}</strong>님의 계정 비밀번호가 관리자에 의해 초기화되었습니다.<br />
+                아래의 임시 비밀번호로 로그인 후, 반드시 비밀번호를 변경해 주세요.
+              </p>
+            </td>
+          </tr>
+
+          <!-- 임시 비밀번호 박스 -->
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#f8f8f8; border:1px solid #e4e4e7; border-radius:8px; padding:24px; text-align:center;">
+                    <p style="margin:0 0 8px; font-size:12px; color:#888888; letter-spacing:1px;">임시 비밀번호</p>
+                    <p style="margin:0; font-size:28px; font-weight:700; color:#111111; letter-spacing:4px; font-family:monospace;">
+                      {{tempPassword}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- 로그인 버튼 -->
+          <tr>
+            <td style="padding:0 40px 40px; text-align:center;">
+              <a href="{{loginUrl}}"
+                 style="display:inline-block; background-color:#111111; color:#ffffff; text-decoration:none; font-size:14px; font-weight:700; padding:14px 40px; border-radius:8px; letter-spacing:0.5px;">
+                로그인하러 가기
+              </a>
+            </td>
+          </tr>
+
+          <!-- 보안 안내 -->
+          <tr>
+            <td style="padding:0 40px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#fffbeb; border-left:3px solid #f59e0b; border-radius:4px; padding:16px 20px;">
+                    <p style="margin:0 0 6px; font-size:13px; font-weight:700; color:#92400e;">보안 안내</p>
+                    <ul style="margin:0; padding-left:16px; font-size:13px; color:#78350f; line-height:1.9;">
+                      <li>임시 비밀번호는 최초 로그인 후 반드시 변경해 주세요.</li>
+                      <li>비밀번호는 타인과 절대 공유하지 마세요.</li>
+                      <li>본인이 요청하지 않은 경우 관리자에게 문의해 주세요.</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- 구분선 -->
+          <tr>
+            <td style="padding:0 40px;">
+              <hr style="border:none; border-top:1px solid #e4e4e7; margin:0;" />
+            </td>
+          </tr>
+
+          <!-- 푸터 -->
+          <tr>
+            <td style="padding:24px 40px; text-align:center;">
+              <p style="margin:0 0 4px; font-size:12px; color:#aaaaaa;">
+                이 메일은 발신 전용입니다. 문의 사항은 관리자에게 연락해 주세요.
+              </p>
+              <p style="margin:0; font-size:12px; color:#cccccc;">
+                © 2026 LEE × JI. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

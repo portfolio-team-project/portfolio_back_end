@@ -236,4 +236,24 @@ public class MemberServiceImpl implements MemberService {
 	    redisService.deleteRefreshToken(member.getUuid());
 	}
 
+	@Override
+	public void checkTempPwd(MemberEntity member) {
+
+		if ( "Y".equals(member.getTempPwdYn()) ) {
+			throw new BusinessException(MessageConstants.CHG_PWD_TEMP_PWD);
+		}
+	}
+
+	@Override
+	@Transactional
+	public void changeTempPwd(MemberEntity member, String tempPwd) {
+		
+		String encodePwd = passwordEncoder.encode(tempPwd);
+		
+		member.updateTempPwd(encodePwd);
+		memberRepository.save(member);
+		
+		redisService.deleteRefreshToken(member.getUuid());
+	}
+
 }

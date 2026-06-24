@@ -3,6 +3,8 @@ package com.api.domain.base.Member.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.api.domain.auth.entity.UserAuthEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -92,6 +94,10 @@ public class MemberEntity {
 	@Column(name="marketing_agree_date")
 	private LocalDateTime marketingAgreeDate;
 	
+	@Column(name="temp_pwd_yn", length = 1)
+	@ColumnDefault("'N'")
+	private String tempPwdYn;
+	
 	//cascade 권한 삭제
 	@OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<UserAuthEntity> userAuthList;
@@ -99,11 +105,18 @@ public class MemberEntity {
 
 	public void updatePassword(String password) {
 	    this.password = password;
+	    this.tempPwdYn = "N";
 	    this.chgPwdDt = LocalDateTime.now();
 	}
 
 	public void withdraw() {
 	    this.status = "N";
 	    this.updatedDate = LocalDateTime.now();
+	}
+	
+	public void updateTempPwd(String password) {
+		this.tempPwdYn = "Y";
+		this.password = password;
+		this.chgPwdDt = LocalDateTime.now();
 	}
 }
