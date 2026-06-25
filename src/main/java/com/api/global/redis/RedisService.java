@@ -124,7 +124,7 @@ public class RedisService {
 	public Long incrementAttempt(String sessionToken) {
 	    Long count = redisTemplate.opsForValue().increment("ATTEMPT_SESSION:" + sessionToken);
 	    if (count == 1) {
-	        redisTemplate.expire("ATTEMPT:" + sessionToken, 3, TimeUnit.MINUTES);
+	        redisTemplate.expire("ATTEMPT_SESSION:" + sessionToken, 3, TimeUnit.MINUTES);
 	    }
 	    return count;
 	}
