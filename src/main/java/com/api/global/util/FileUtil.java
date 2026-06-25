@@ -36,7 +36,7 @@ public class FileUtil {
 		String month = String.valueOf(date.getMonthValue());
 		 
 		String subPath = year + "/" + month + "/" + path;
-		String urlPath = "/upload/" + subPath;
+		String urlPath = "/api/upload/" + subPath;
 		String uploadPath = basePath + "/" + subPath;
 		 
 		File uploadDir = new File(uploadPath);

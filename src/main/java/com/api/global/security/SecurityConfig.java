@@ -73,7 +73,7 @@ public class SecurityConfig {
                     "/api/accession/join",
                     "/api/mail/**",
                     "/api/qna/**",
-                    "/upload/**",
+                    "/api/upload/**",
                     "/health"
                 ).permitAll()
                 .anyRequest().authenticated()
