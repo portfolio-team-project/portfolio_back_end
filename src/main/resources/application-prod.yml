@@ -55,3 +55,11 @@ email:
 
 hash:
   secret-key: ${HASH_SECRET_KEY}
+  
+file:
+  upload:
+    path: /upload
+    
+security:
+  csp:
+    img-src: https://crops-project.com

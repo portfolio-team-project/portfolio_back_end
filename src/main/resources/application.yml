@@ -11,6 +11,11 @@ spring:
     - ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: portfolio_project
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+    
     
 kakao:
   client-id: ${KAKAO_REST_API_KEY}

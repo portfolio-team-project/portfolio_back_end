@@ -46,4 +46,8 @@ public class MessageConstants {
     public static final String SEQ_NOT_FOUND = "QNA 정보를 찾을 수 없습니다.";
     public static final String ALREADY_ANSWER_EXIST = "이미 답변이 등록된 QNA입니다.";
     public static final String ALREADY_ANSWER_DELETE = "이미 삭제된 QNA입니다.";
+    
+    //이미지 전송
+    public static final String FILE_UPLOAD_FAILED = "이미지 업로드에 실패하였습니다.";
+    public static final String INVALID_FILE_TYPE = "유효하지 않은 파일 타입입니다.";
 }

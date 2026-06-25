@@ -1,5 +1,7 @@
 package com.api.domain.qna.controller;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.api.domain.qna.dto.QnaDetailResponse;
 import com.api.domain.qna.dto.QnaListResponse;
@@ -22,6 +25,7 @@ import com.api.domain.qna.dto.QnaMemberRequest;
 import com.api.domain.qna.dto.QnaRequest;
 import com.api.domain.qna.service.QnaService;
 import com.api.global.common.ApiResponse;
+import com.api.global.util.FileUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class QnaController {
 	
 	private final QnaService qnaService;
+	private final FileUtil fileUtil;
 	
 	// 게스트 qna 삽입
 	@PostMapping("/guest")
@@ -72,6 +77,14 @@ public class QnaController {
 	public ResponseEntity<ApiResponse<QnaDetailResponse>> detailQna(@PathVariable Long qnaSeq){
 		
 		return ResponseEntity.ok(ApiResponse.ok(qnaService.getQnaDetail(qnaSeq, "N", "Y", true)));
+	}
+	
+	@PostMapping("/uploadImg")
+	public ResponseEntity<ApiResponse<Map<String, String>>> uploadimage(@RequestParam("image") MultipartFile file) {
+		
+		String filePath = fileUtil.fileUpload(file, "image");
+		
+		return ResponseEntity.ok(ApiResponse.ok(Map.of("url", filePath)));
 	}
 
 }
