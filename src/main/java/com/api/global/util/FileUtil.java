@@ -2,6 +2,7 @@ package com.api.global.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,7 +47,9 @@ public class FileUtil {
         
 		String uuid = UuidUtil.makeUuid();
         
-		String fileName = uuid + "_" + file.getOriginalFilename();
+		String safeName = Paths.get(file.getOriginalFilename()).getFileName().toString();
+		String fileName = uuid + "_" + safeName;
+
 		try {
 			file.transferTo(new File(uploadPath + "/" + fileName));
 		} catch (IllegalStateException | IOException e) {
