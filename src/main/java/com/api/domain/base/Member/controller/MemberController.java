@@ -36,15 +36,6 @@ public class MemberController {
 	private final MemberService memberService;
 	private final LoginFailService loginFailService;
 	
-	// 회원가입
-	@PostMapping("/join")
-	public String signUp(@RequestBody MemberRequest request) {
-		
-		
-		
-		return "OK";
-	}
-	
 	// 회원탈퇴
 	@PostMapping("/withdraw")
 	public ResponseEntity<ApiResponse<Void>> withdraw(@RequestBody @Valid WithdrawRequest request, HttpServletResponse response) {

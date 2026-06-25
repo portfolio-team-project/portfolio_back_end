@@ -97,6 +97,15 @@ public class JwtProvider {
                 .get("role", String.class);
     }
     
+    public String getTokenType(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("type", String.class);
+    }
+    
     /*
      * payload 안에 있는 user 값 반환
      * */

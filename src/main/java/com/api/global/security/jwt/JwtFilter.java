@@ -31,6 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Authorization 헤더 가져오기
         String bearerToken = request.getHeader("Authorization");
+        
+        
 
         // Bearer 토큰인지 확인
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -40,6 +42,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // JWT 유효성 검사
             if (jwtProvider.validateToken(token)) {
+            	
+            	 String tokenType = jwtProvider.getTokenType(token);
+                 if (!"access".equals(tokenType)) {
+                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                     return;
+                 }
 
                 // JWT에서 uuid 추출
                 String uuid = jwtProvider.getUuid(token);
