@@ -107,5 +107,26 @@ public class RedisService {
 	public void deleteSignupVerified(String email) {
 	    redisTemplate.delete("SIGNUP_VERIFIED:" + email);
 	}
+	
+	//비밀번호 찾기 세션 횟수 제한
+	public void saveSessionToken(String sessionToken, String uuid) {
+	    redisTemplate.opsForValue().set("SESSION:" + sessionToken, uuid, 3, TimeUnit.MINUTES);
+	}
+
+	public String getSessionToken(String sessionToken) {
+	    return redisTemplate.opsForValue().get("SESSION:" + sessionToken);
+	}
+
+	public void deleteSessionToken(String sessionToken) {
+	    redisTemplate.delete("SESSION:" + sessionToken);
+	}
+	
+	public Long incrementAttempt(String sessionToken) {
+	    Long count = redisTemplate.opsForValue().increment("ATTEMPT_SESSION:" + sessionToken);
+	    if (count == 1) {
+	        redisTemplate.expire("ATTEMPT:" + sessionToken, 3, TimeUnit.MINUTES);
+	    }
+	    return count;
+	}
 
 }

@@ -14,8 +14,8 @@ public interface MemberService {
 	MemberEntity login(String userId, String password);
 	String getRole(MemberEntity member);
 	MemberEntity findByUuid(String uuid);
-	void sendCertificationEmail(String userId, String email);
-	void verifyCertificationNum(String userId,String certNum);
+	String sendCertificationEmail(String userId, String email);
+	void verifyCertificationNum(String userId,String certNum, String sessionToken);
 	void changePassword(String userId, String newPassword);
 	void checkPasswordExpired(MemberEntity member);
 	void verifyAndChangePassword(String userId, String currentPwd, String newPassword);
