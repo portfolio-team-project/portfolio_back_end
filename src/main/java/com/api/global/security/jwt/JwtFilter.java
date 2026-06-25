@@ -41,8 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
             // JWT 유효성 검사
             if (jwtProvider.validateToken(token)) {
 
-                // JWT에서 username 추출
-                String username = jwtProvider.getUsername(token);
+                // JWT에서 uuid 추출
+                String uuid = jwtProvider.getUuid(token);
                 
                 String role = jwtProvider.getRole(token);
                 
@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 // 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                username,
+                        		uuid,
                                 null,
                                 authorities
                         );

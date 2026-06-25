@@ -22,6 +22,10 @@ import io.jsonwebtoken.security.Keys;
 public class JwtProvider {
 	@Value("${jwt.secret}")
     private String secret;
+	@Value("${jwt.expiration}")
+	private Long expiration;
+	@Value("${jwt.refresh-expiration}")
+	private Long refreshExpiration;
 	
 	/*
 	 * String key값을 Secret Key 값으로 변환
@@ -33,25 +37,24 @@ public class JwtProvider {
     }
 	
     //토큰 생성 1시간
-    public String createToken(String username, String role) {
+    public String createToken(String uuid, String role) {
     	return Jwts.builder()
-                   .subject(username)
+                   .subject(uuid)
                    .claim("type", "access")
                    .claim("role",role)
                    .issuedAt(new Date())
-                   .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                   .expiration(new Date(System.currentTimeMillis() + expiration))
                    .signWith(getSigningKey())
                    .compact();
     }
     
     //refresh 토큰 생성 Redis용 7일
-    public String createRefreshToken(String username, String role) {
+    public String createRefreshToken(String uuid) {
     	return Jwts.builder()
-                .subject(username)
+                .subject(uuid)
                 .claim("type","refresh")
-                .claim("role",role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -97,7 +100,7 @@ public class JwtProvider {
     /*
      * payload 안에 있는 user 값 반환
      * */
-    public String getUsername(String token) {
+    public String getUuid(String token) {
 
         return Jwts.parser()
                    .verifyWith(getSigningKey())

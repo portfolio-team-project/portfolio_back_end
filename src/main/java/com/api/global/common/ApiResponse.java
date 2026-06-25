@@ -1,5 +1,8 @@
 package com.api.global.common;
 
+import lombok.Getter;
+
+@Getter
 public class ApiResponse <T> {
     private boolean success;
     private String message;
@@ -13,5 +16,9 @@ public class ApiResponse <T> {
 
     public static <T> ApiResponse<T> ok(T data) {
         return new ApiResponse<>(true, "OK", data);
+    }
+    
+    public static ApiResponse<Void> ok() {
+        return new ApiResponse<>(true, "OK", null);
     }
 }

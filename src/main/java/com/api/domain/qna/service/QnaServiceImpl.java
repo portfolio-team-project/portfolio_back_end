@@ -1,0 +1,179 @@
+package com.api.domain.qna.service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.api.domain.base.Member.entity.MemberEntity;
+import com.api.domain.base.Member.service.MemberService;
+import com.api.domain.qna.dto.QnaDetailResponse;
+import com.api.domain.qna.dto.QnaListResponse;
+import com.api.domain.qna.dto.QnaMemberRequest;
+import com.api.domain.qna.dto.QnaRequest;
+import com.api.domain.qna.entity.QnaEntity;
+import com.api.domain.qna.repository.QnaRepository;
+import com.api.global.constants.MessageConstants;
+import com.api.global.exception.BusinessException;
+import com.api.global.util.HtmlSanitizer;
+import com.api.global.util.HttpUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class QnaServiceImpl implements QnaService {
+
+	private final MemberService memberService;
+	private final QnaRepository qnaRepository;
+	
+	@Override
+	@Transactional
+	public void createGuestQna(QnaRequest qnaRequest, HttpServletRequest request) {
+		
+		String ipAddr = HttpUtil.getClientIp(request);
+		
+		qnaRepository.save(QnaEntity.builder()
+				                    .title(HtmlSanitizer.sanitize(qnaRequest.getTitle()))
+				                    .nickname(HtmlSanitizer.sanitize(qnaRequest.getNickname()))
+				                    .content(HtmlSanitizer.sanitize(qnaRequest.getContent()))
+				                    .ipAddr(ipAddr)
+				                    .build());
+	}
+
+	@Override
+	@Transactional
+	public void createMemberQna(QnaMemberRequest qnaMemberRequest, String uuid, HttpServletRequest request) {
+		
+		String ipAddr = HttpUtil.getClientIp(request);
+		MemberEntity member = memberService.findByUuid(uuid);
+		
+		qnaRepository.save(QnaEntity.builder()
+				                    .title(HtmlSanitizer.sanitize(qnaMemberRequest.getTitle()))
+				                    .content(HtmlSanitizer.sanitize(qnaMemberRequest.getContent()))
+				                    .nickname(HtmlSanitizer.sanitize(member.getUserId()))
+				                    .member(member)
+				                    .ipAddr(ipAddr)
+				                    .build());
+	}
+
+	@Override
+	public Page<QnaListResponse> getQnaList(Pageable pageable,String title, String delYn, String answerYn) {
+		Pageable sortedPage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), 
+                Sort.by(Sort.Direction.DESC, "regDt"));
+		
+		Page<QnaEntity> result;
+		
+		if (title == null || title.isBlank()) {
+		    if (answerYn == null) {
+		        result = qnaRepository.findByDelYn(delYn, sortedPage);
+		    } else {
+		        result = qnaRepository.findByDelYnAndAnswerYn(delYn, answerYn, sortedPage);
+		    }
+		} else {
+		    if (answerYn == null) {
+		        result = qnaRepository.findByDelYnAndTitleContaining(delYn, title, sortedPage);
+		    } else {
+		        result = qnaRepository.findByDelYnAndAnswerYnAndTitleContaining(delYn, answerYn, title, sortedPage);
+		    }
+		}
+		
+		return result.map(m -> QnaListResponse.builder()
+				                              .title(m.getTitle())
+				                              .qnaSeq(m.getQnaSeq())
+				                              .nickname(HtmlSanitizer.maskNickname(m.getNickname()))
+				                              .regDt(m.getRegDt())
+				                              .answerYn(m.getAnswerYn())
+				                              .viewCnt(m.getViewCnt())
+				                              .build()
+				);
+	}
+
+	@Override
+	@Transactional
+	public QnaDetailResponse getQnaDetail(Long qnaSeq,String delYn, String answerYn,boolean increaseView) {
+		
+		QnaEntity qnaData;
+		
+		if (delYn == null && answerYn == null) {
+		    qnaData = qnaRepository.findById(qnaSeq).orElseThrow(
+		        () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+		    );
+		} else {
+		    qnaData = qnaRepository.findByQnaSeqAndDelYnAndAnswerYn(qnaSeq, delYn, answerYn).orElseThrow(
+		        () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+		    );
+		}
+		
+	    if (increaseView) {
+	    	qnaData.increaseViewCnt();
+	    }
+	    
+		return QnaDetailResponse.builder()
+				                .qnaSeq(qnaData.getQnaSeq())
+				                .nickname(HtmlSanitizer.maskNickname(qnaData.getNickname()))
+				                .title(qnaData.getTitle())
+				                .content(qnaData.getContent())
+				                .regDt(qnaData.getRegDt())
+				                .answerYn(qnaData.getAnswerYn())
+				                .answer(qnaData.getAnswer())
+				                .answerDt(qnaData.getAnswerDt())
+				                .viewCnt(qnaData.getViewCnt())
+				                .isMember(qnaData.getMember() != null)
+				                .build();
+	}
+	
+	@Override
+	public long countThisMonthQnaAll(String delYn) {
+		
+		LocalDateTime st = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+		LocalDateTime ed = LocalDateTime.now();
+		
+		return qnaRepository.countByDelYnAndRegDtBetween(delYn,st,ed);
+	}
+
+	@Override
+	@Transactional
+	public void insertQnaAnswer(Long qnaSeq, String answer) {
+		
+		
+		QnaEntity qnaData = qnaRepository.findByQnaSeq(qnaSeq).orElseThrow(
+				  () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+				);
+		
+		if ( "Y".equals(qnaData.getAnswerYn()) ) {
+			throw new BusinessException(MessageConstants.ALREADY_ANSWER_EXIST);
+		}
+		
+		qnaData.registerAnswer(answer);
+		
+		qnaRepository.save(qnaData);
+		
+	}
+
+	@Override
+	@Transactional
+	public void deleteQnaData(Long qnaSeq) {
+		
+		QnaEntity qnaData = qnaRepository.findByQnaSeq(qnaSeq).orElseThrow(
+				  () -> new BusinessException(MessageConstants.SEQ_NOT_FOUND)
+				);
+		
+		if ( "Y".equals(qnaData.getDelYn()) ) {
+			throw new BusinessException(MessageConstants.ALREADY_ANSWER_DELETE);
+		}
+		
+		qnaData.softDelete();
+		
+		qnaRepository.save(qnaData);
+	}
+
+}

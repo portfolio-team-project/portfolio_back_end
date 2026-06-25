@@ -90,6 +90,9 @@ pipeline {
     post {
         success {
             echo 'Deploy success'
+            
+            sh "docker image prune -f"
+            
         }
 
         failure {
@@ -146,6 +149,8 @@ pipeline {
 			        fi
 			    """
 			}
+			sh "docker image prune -f"
+			
         }
     }
 }

@@ -1,6 +1,20 @@
 spring:
+    main:
+        banner-mode: console
     config:
         import: optional:file:src/.env[.properties]
+    mail:
+        host: ${MAIL_HOST}
+        port: ${MAIL_PORT}
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+                required: true
     datasource:
         url: ${DB_URL_PROD}
         username: ${DB_USERNAME_PROD}
@@ -20,10 +34,21 @@ spring:
         redis:
           host: ${REDIS_HOST_PROD}
           port: ${REDIS_PORT_PROD}
+        web:
+          pageable:
+            serialization-mode: via-dto
 
-          
 cors:
-    allowed-origin: ${CORS_ALLOWED_ORIGIN}
+    allowed-origin: ${CORS_ALLOWED_ORIGIN_DEV}
 
 jwt:
     secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    
+email:
+    lee: pshowx12@naver.com
+    ji: jisang034@naver.com
+    
+hash:
+  secret-key: ${HASH_SECRET_KEY}

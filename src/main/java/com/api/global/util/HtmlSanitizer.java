@@ -14,4 +14,11 @@ public class HtmlSanitizer {
         if (html == null) return null;
         return POLICY.sanitize(html);
     }
+    
+    public static String maskNickname(String nickname) {
+        if (nickname == null || nickname.isEmpty()) return nickname;
+        if (nickname.length() == 1) return "*";
+        
+        return nickname.charAt(0) + "*".repeat(nickname.length() - 1);
+    }
 }

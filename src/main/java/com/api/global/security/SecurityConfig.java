@@ -1,5 +1,6 @@
 package com.api.global.security;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,6 +25,7 @@ import com.api.global.security.handler.CustomAuthenticationEntryPoint;
 import com.api.global.security.jwt.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * 
@@ -32,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Log4j2
 public class SecurityConfig {
     
     private final CorsProperties corsProperties;
@@ -49,9 +54,23 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 나머지 Security 설정...
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/ds/**",
-                		         "/api/auth/**",
-                		         "/health").permitAll()
+        		.requestMatchers("/api/auth/logout").authenticated()
+                .requestMatchers(
+                    "/api/login",
+                    "/api/kakaoJoin",
+                    "/api/auth/**",
+                    "/api/member/idCheck",
+                    "/api/member/findPassword",
+                    "/api/member/verifyNum",
+                    "/api/member/resetPassword",
+                    "/api/member/changePassword",
+                    "/api/accession/sendEmailAuth",
+                    "/api/accession/verifyNum",
+                    "/api/accession/join",
+                    "/api/mail/**",
+                    "/api/qna/**",
+                    "/health"
+                ).permitAll()
                 .anyRequest().authenticated()
             ).exceptionHandling(ex -> ex
                     .authenticationEntryPoint(entryPoint)
@@ -77,14 +96,21 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(corsProperties.getAllowedOrigin()));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+        config.setAllowedOriginPatterns(Arrays.asList(corsProperties.getAllowedOrigin().split(",")));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+    
+    @Bean
+    UserDetailsService userDetailsService() {
+        return username -> {
+            throw new UsernameNotFoundException(username);
+        };
     }
     
     @Bean
