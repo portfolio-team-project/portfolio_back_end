@@ -33,7 +33,7 @@ public class AccessLogServiceImpl implements AccessLogService{
 	@Transactional
 	public void deleteBeforeSixMonth() {
 		LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(6);
-        accessLogRepository.deleteByAccessedAtBefore(sixMonthsAgo);
+        accessLogRepository.deleteByAccessDtBefore(sixMonthsAgo);
 	}
 	
 }
