@@ -51,6 +51,7 @@ pipeline {
 				        	-e SPRING_PROFILES_ACTIVE=prod \
 				            --env-file "\$ENV_FILE" \
 				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
+				            -v /home/ubuntu/docker_srv/was_home/upload:/upload \
 				            --name \$CONTAINER_NAME \
 				            \$IMAGE_NAME:latest
 				    """
@@ -118,6 +119,7 @@ pipeline {
 			                -e SPRING_PROFILES_ACTIVE=prod \\
 			                --env-file \$ENV_FILE \\
 			                -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \\
+			                -v /home/ubuntu/docker_srv/was_home/upload:/upload \\
 			                --name \$CONTAINER_NAME \\
 			                \$IMAGE_NAME:latest
 			

@@ -1,5 +1,6 @@
 package com.api.domain.base.Member.service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
 import com.api.global.util.MailUtil;
+import com.api.global.util.UuidUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,27 +74,41 @@ public class MemberServiceImpl implements MemberService {
 	}
 
     @Override
-    public void sendCertificationEmail(String userId, String email) {
-        MemberEntity member = memberRepository.findByUserIdAndEmail(userId, email)
+    public String sendCertificationEmail(String userId, String email) {
+    	MemberEntity member = memberRepository.findByUserIdAndEmail(userId, email)
                                               .orElseThrow(() -> new BusinessException(MessageConstants.CHECK_EMAIL_ID));
         
         //임의의 난수값 생성
-        String certNum = String.valueOf((int)(Math.random() * 900000) + 100000);
+    	SecureRandom sr = new SecureRandom();
+    	String certNum = String.valueOf(100000 + sr.nextInt(900000));
+    	String sessionToken = UuidUtil.makeUuid();
        
-       redisService.saveCertNum(member.getUuid(), certNum);
+        redisService.saveCertNum(member.getUuid(), certNum);
+        redisService.saveSessionToken(sessionToken,member.getUuid());
        
-       try {
-           mailUtil.req(email,certNum);
+        try {
+        	mailUtil.req(email,certNum);
         } catch (Exception e) {
             throw new BusinessException(MessageConstants.EMAIL_SEND_FAILED);
         }
+        
+        return sessionToken;
     }
 
     @Override
-    public void verifyCertificationNum(String userId, String certNum) {
+    public void verifyCertificationNum(String userId, String certNum, String sessionToken) {
         
+    	String savedUuid = redisService.getSessionToken(sessionToken);
+        if (savedUuid == null) {
+            throw new BusinessException(MessageConstants.CERT_NUM_EXPIRED);
+        }
+    	
         MemberEntity member = memberRepository.findByUserId(userId)
                                                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
+        
+        if (!savedUuid.equals(member.getUuid())) {
+            throw new BusinessException(MessageConstants.MEMBER_NOT_FOUND);
+        }
         
         String savedCertNum = redisService.getCertNum(member.getUuid());
         
@@ -100,9 +116,15 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(MessageConstants.CERT_NUM_EXPIRED);
         }
         if (!savedCertNum.equals(certNum)) {
+        	Long attempts = redisService.incrementAttempt(sessionToken); // 틀렸을 카운트 증가
+    	    if (attempts >= 5) { // 카운트 5회 이상 시 세션토큰 삭제 만료 처리
+    	        redisService.deleteSessionToken(sessionToken);
+    	        throw new BusinessException(MessageConstants.CERT_NUM_EXPIRED);
+    	    }
             throw new BusinessException(MessageConstants.CERT_NUM_NOT_MATCH);
         }
         
+        redisService.deleteSessionToken(sessionToken);
         redisService.saveVerified(member.getUuid());
     }
 

@@ -36,15 +36,6 @@ public class MemberController {
 	private final MemberService memberService;
 	private final LoginFailService loginFailService;
 	
-	// 회원가입
-	@PostMapping("/join")
-	public String signUp(@RequestBody MemberRequest request) {
-		
-		
-		
-		return "OK";
-	}
-	
 	// 회원탈퇴
 	@PostMapping("/withdraw")
 	public ResponseEntity<ApiResponse<Void>> withdraw(@RequestBody @Valid WithdrawRequest request, HttpServletResponse response) {
@@ -82,20 +73,22 @@ public class MemberController {
 	 * 비밀번호 찾기
 	 * */
 	@PostMapping("/findPassword")
-	public ResponseEntity<ApiResponse<Void>> findPassword(@RequestParam String userId, @RequestParam String email) {
+	public ResponseEntity<ApiResponse<String>> findPassword(@RequestParam String userId, @RequestParam String email) {
 	    
-	    memberService.sendCertificationEmail(userId, email);
+	    String sessionToken = memberService.sendCertificationEmail(userId, email);
 	    
-	    return ResponseEntity.ok(ApiResponse.ok());
+	    return ResponseEntity.ok(ApiResponse.ok(sessionToken));
 	}
 	
 	/*
 	 * 인증번호 확인
 	 * */
 	@PostMapping("/verifyNum")
-	public ResponseEntity<ApiResponse<Void>> verifyCertificationNum(@RequestParam String userId, @RequestParam String certificateNum){
+	public ResponseEntity<ApiResponse<Void>> verifyCertificationNum(@RequestParam String userId, 
+			                                                        @RequestParam String certificateNum,
+			                                                        @RequestParam String sessionToken){
 	    
-	    memberService.verifyCertificationNum(userId, certificateNum);
+	    memberService.verifyCertificationNum(userId, certificateNum, sessionToken);
 	    
 	    return ResponseEntity.ok(ApiResponse.ok());
 	}

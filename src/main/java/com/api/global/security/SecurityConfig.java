@@ -3,6 +3,7 @@ package com.api.global.security;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -43,6 +44,9 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomAccessDeniedHandler deniedHandler;
     private final CustomAuthenticationEntryPoint entryPoint;
+    
+    @Value("${security.csp.img-src}")
+    private String cspImgSrc;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -69,6 +73,7 @@ public class SecurityConfig {
                     "/api/accession/join",
                     "/api/mail/**",
                     "/api/qna/**",
+                    "/api/upload/**",
                     "/health"
                 ).permitAll()
                 .anyRequest().authenticated()
@@ -84,7 +89,7 @@ public class SecurityConfig {
                         "default-src 'self'; " +
                         "script-src 'self'; " +
                         "style-src 'self' 'unsafe-inline'; " +
-                        "img-src 'self' data:; " +
+                        "img-src 'self' data: " + cspImgSrc + "; " +
                         "connect-src 'self'"
                     )
                 )

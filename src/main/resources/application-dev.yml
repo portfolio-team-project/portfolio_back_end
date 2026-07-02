@@ -52,3 +52,11 @@ email:
     
 hash:
   secret-key: ${HASH_SECRET_KEY}
+  
+file:
+  upload:
+    path: C:/upload
+    
+security:
+  csp:
+    img-src: http://localhost:8081
