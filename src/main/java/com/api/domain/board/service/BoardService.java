@@ -15,4 +15,5 @@ public interface BoardService {
     BoardDetailResponse getBoardDetail(Long localId);
     void updateBoard(Long localId, BoardRequest boardRequest, String uuid);
     void deleteBoard(Long localId, BoardDeleteRequest boardDeleteRequest, String uuid);
+    long countThisMonthBoardAll(String delYn, String noticeYn);
 }

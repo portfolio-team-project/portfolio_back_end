@@ -21,6 +21,7 @@ import com.api.domain.base.Member.dto.MemberDetailResponse;
 import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.domain.board.service.BoardService;
 import com.api.domain.qna.dto.QnaDetailResponse;
 import com.api.domain.qna.dto.QnaListResponse;
 import com.api.domain.qna.service.QnaService;
@@ -40,6 +41,7 @@ public class adminController {
 	
 	private final MemberService memberService;
 	private final AdminService adminService;
+	private final BoardService boardService;
 	private final QnaService qnaService;
 	private final MailUtil mailUtil;
 	
@@ -141,5 +143,14 @@ public class adminController {
 		memberService.changeTempPwd(member, tempPwd);
 		
 		return ResponseEntity.ok(ApiResponse.ok());
+	}
+	
+	@GetMapping("/boardMonthCount")
+	public ResponseEntity<ApiResponse<Long>> boardMonthCount() {
+		
+		Long monthCount = boardService.countThisMonthBoardAll("N", "N");
+		
+		
+		return ResponseEntity.ok(ApiResponse.ok(monthCount));
 	}
 }

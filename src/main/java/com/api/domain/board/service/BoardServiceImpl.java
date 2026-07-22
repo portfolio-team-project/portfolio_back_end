@@ -1,8 +1,8 @@
 package com.api.domain.board.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -137,4 +137,12 @@ public class BoardServiceImpl implements BoardService {
                 .noticeYn(b.getNoticeYn())
                 .build();
     }
+
+	@Override
+	public long countThisMonthBoardAll(String delYn, String noticeYn) {
+		LocalDate st = LocalDate.now().withDayOfMonth(1);
+		LocalDate ed = LocalDate.now();
+		
+		return boardRepository.countByDelYnAndNoticeYnAndCreatedDateBetween(delYn, noticeYn, st, ed);
+	}
 }
