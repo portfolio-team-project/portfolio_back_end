@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 public class chatbotUtil {
 
     private final RestTemplate restTemplate;
-    private final HtmlSanitizer htmlSanitizer;
 
     @Value("${chatbot.url}")
     private String chatbotUrl;
@@ -24,12 +23,11 @@ public class chatbotUtil {
     @Value("${chatbot.token}")
     private String chatbotToken;
 
-    public chatbotUtil(RestTemplateBuilder builder, HtmlSanitizer htmlSanitizer) {
+    public chatbotUtil(RestTemplateBuilder builder) {
         this.restTemplate = builder
         		.connectTimeout(Duration.ofSeconds(5))
                 .readTimeout(Duration.ofSeconds(60))
                 .build();
-        this.htmlSanitizer = htmlSanitizer;
     }
 
     public String ask(String query) {
@@ -37,7 +35,7 @@ public class chatbotUtil {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-Token", chatbotToken);
         
-        query = htmlSanitizer.sanitize(query);
+        query = HtmlSanitizer.sanitize(query);
 
         Map<String, String> body = Map.of("query", query);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
