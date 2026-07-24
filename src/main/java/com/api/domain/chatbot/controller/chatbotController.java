@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 @RequiredArgsConstructor
 @Slf4j
 public class chatbotController {
@@ -25,7 +26,6 @@ public class chatbotController {
 	private final chatbotUtil chatbotutil;
 	
 	@GetMapping("/chatbot")
-	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<ApiResponse<String>> memberDataLoad(@RequestParam(required = false) String content){
 		
 		if (content == null || content.isBlank()) {
