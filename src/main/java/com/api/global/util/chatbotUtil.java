@@ -1,5 +1,6 @@
 package com.api.global.util;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 
@@ -12,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class chatbotUtil {
 
     private final RestTemplate restTemplate;
@@ -25,8 +29,17 @@ public class chatbotUtil {
 
     public chatbotUtil(RestTemplateBuilder builder) {
         this.restTemplate = builder
-        		.connectTimeout(Duration.ofSeconds(5))
+                .connectTimeout(Duration.ofSeconds(5))
                 .readTimeout(Duration.ofSeconds(60))
+                .additionalInterceptors((request, body, execution) -> {
+                    log.info("=== OUTGOING REQUEST ===");
+                    log.info("URI: {}", request.getURI());
+                    log.info("Method: {}", request.getMethod());
+                    log.info("Headers: {}", request.getHeaders());
+                    log.info("Body bytes length: {}", body.length);
+                    log.info("Body content: {}", new String(body, StandardCharsets.UTF_8));
+                    return execution.execute(request, body);
+                })
                 .build();
     }
 
