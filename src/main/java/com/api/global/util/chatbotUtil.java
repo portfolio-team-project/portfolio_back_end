@@ -34,7 +34,8 @@ public class chatbotUtil {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-Token", chatbotToken);
 
-        HttpEntity<ChatRequest> entity = new HttpEntity<>(new ChatRequest(query), headers);
+        String rawBody = "{\"query\":\"" + query + "\"}";
+        HttpEntity<String> entity = new HttpEntity<>(rawBody, headers);
 
         ResponseEntity<ChatResponse> response =
                 restTemplate.postForEntity(chatbotUrl, entity, ChatResponse.class);
