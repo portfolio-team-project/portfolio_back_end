@@ -10,13 +10,16 @@ import org.springframework.web.client.RestClientException;
 
 import com.api.global.common.ApiResponse;
 import com.api.global.exception.BusinessException;
+import com.api.global.exception.GlobalExceptionHandler;
 import com.api.global.util.chatbotUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class chatbotController {
 	
 	private final chatbotUtil chatbotutil;
@@ -34,6 +37,7 @@ public class chatbotController {
             answer = chatbotutil.ask(content);
         } catch (RestClientException e) {
             // 챗봇 컨테이너 다운/타임아웃 등 호출 실패
+        	log.error("챗봇 호출 실패: ", e);
         	throw new BusinessException("챗봇 서버 호출에 실패하였습니다.");
         }
 		
