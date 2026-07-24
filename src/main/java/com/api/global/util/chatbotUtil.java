@@ -1,6 +1,7 @@
 package com.api.global.util;
 
 import java.time.Duration;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 public class chatbotUtil {
 
     private final RestTemplate restTemplate;
+    private final HtmlSanitizer htmlSanitizer;
 
     @Value("${chatbot.url}")
     private String chatbotUrl;
@@ -22,26 +24,30 @@ public class chatbotUtil {
     @Value("${chatbot.token}")
     private String chatbotToken;
 
-    public chatbotUtil(RestTemplateBuilder builder) {
+    public chatbotUtil(RestTemplateBuilder builder, HtmlSanitizer htmlSanitizer) {
         this.restTemplate = builder
         		.connectTimeout(Duration.ofSeconds(5))
                 .readTimeout(Duration.ofSeconds(60))
                 .build();
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     public String ask(String query) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-Token", chatbotToken);
+        
+        query = htmlSanitizer.sanitize(query);
 
-        String rawBody = "{\"query\":\"" + query + "\"}";
-        HttpEntity<String> entity = new HttpEntity<>(rawBody, headers);
+        Map<String, String> body = Map.of("query", query);
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
 
         ResponseEntity<ChatResponse> response =
                 restTemplate.postForEntity(chatbotUrl, entity, ChatResponse.class);
 
         return response.getBody().answer();
     }
+
 
     public record ChatRequest(String query) {}
     public record ChatResponse(String answer) {}
