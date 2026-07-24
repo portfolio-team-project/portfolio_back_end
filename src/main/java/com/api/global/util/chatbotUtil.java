@@ -32,7 +32,7 @@ public class chatbotUtil {
         this.restTemplate = builder
                 .requestFactory(SimpleClientHttpRequestFactory::new)   // JDK HttpClient 대신 HttpURLConnection 기반으로 고정
                 .connectTimeout(Duration.ofSeconds(5))
-                .readTimeout(Duration.ofSeconds(60))
+                .readTimeout(Duration.ofSeconds(180))
                 .additionalInterceptors((request, body, execution) -> {
                     log.info("=== OUTGOING REQUEST ===");
                     log.info("URI: {}", request.getURI());
