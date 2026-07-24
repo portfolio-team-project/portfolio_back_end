@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +30,7 @@ public class chatbotUtil {
 
     public chatbotUtil(RestTemplateBuilder builder) {
         this.restTemplate = builder
+                .requestFactory(SimpleClientHttpRequestFactory::new)   // JDK HttpClient 대신 HttpURLConnection 기반으로 고정
                 .connectTimeout(Duration.ofSeconds(5))
                 .readTimeout(Duration.ofSeconds(60))
                 .additionalInterceptors((request, body, execution) -> {
