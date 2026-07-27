@@ -37,7 +37,6 @@ public class chatbotUtil {
                     log.info("=== OUTGOING REQUEST ===");
                     log.info("URI: {}", request.getURI());
                     log.info("Method: {}", request.getMethod());
-                    log.info("Headers: {}", request.getHeaders());
                     log.info("Body bytes length: {}", body.length);
                     log.info("Body content: {}", new String(body, StandardCharsets.UTF_8));
                     return execution.execute(request, body);
