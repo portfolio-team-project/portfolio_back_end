@@ -89,7 +89,7 @@ public class chatbotUtil {
                 .bodyValue(Map.of("query", sanitized))
                 .retrieve()
                 .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
-                .filter(sse -> sse.data() != null)
+                .filter(sse -> sse.data() != null && !"done".equals(sse.event()))
                 .map(sse -> unwrapJsonString(sse.data()))
                 .doOnError(e -> log.error("챗봇 스트리밍 호출 실패", e));
     }
