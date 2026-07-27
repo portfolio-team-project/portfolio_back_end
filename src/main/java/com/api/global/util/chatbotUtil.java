@@ -42,7 +42,7 @@ public class chatbotUtil {
     public chatbotUtil(RestTemplateBuilder builder,
                         WebClient.Builder webClientBuilder,
                         ObjectMapper objectMapper,
-                        @Value("${chatbot.stream-url}") String chatbotStreamUrl) {
+                        @Value("${chatbot.stream}") String chatbotStreamUrl) {
         this.restTemplate = builder
                 .requestFactory(SimpleClientHttpRequestFactory::new)
                 .connectTimeout(Duration.ofSeconds(5))
