@@ -16,6 +16,7 @@ import com.api.global.exception.BusinessException;
 import com.api.global.exception.GlobalExceptionHandler;
 import com.api.global.util.chatbotUtil;
 
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +62,8 @@ public class chatbotController {
                         piece -> {
                             try {
                                 emitter.send(piece);
+                            } catch (IOException e) {
+                                emitter.complete();
                             } catch (Exception e) {
                                 emitter.completeWithError(e);
                             }
