@@ -6,45 +6,29 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
-import reactor.netty.http.client.HttpClient;
 
 @Component
 @Slf4j
 public class chatbotUtil {
 
     private final RestTemplate restTemplate;
-    private final WebClient webClient;
-    private final ObjectMapper objectMapper;
 
     @Value("${chatbot.url}")
     private String chatbotUrl;
 
     @Value("${chatbot.token}")
     private String chatbotToken;
-    
-    @Value("${chatbot.stream}")
-    private String chatbotStreamUrl;
 
-    public chatbotUtil(RestTemplateBuilder builder,
-                        WebClient.Builder webClientBuilder,
-                        ObjectMapper objectMapper,
-                        @Value("${chatbot.stream}") String chatbotStreamUrl) {
+    public chatbotUtil(RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .requestFactory(SimpleClientHttpRequestFactory::new)
                 .connectTimeout(Duration.ofSeconds(5))
@@ -59,16 +43,6 @@ public class chatbotUtil {
                     return execution.execute(request, body);
                 })
                 .build();
-
-        HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofMinutes(10))
-                .keepAlive(false);
-
-        this.webClient = webClientBuilder
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .build();
-
-        this.objectMapper = objectMapper;
     }
 
     public String ask(String query) {
@@ -87,29 +61,5 @@ public class chatbotUtil {
         return response.getBody().answer();
     }
 
-    public Flux<String> askStream(String query) {
-        String sanitized = HtmlSanitizer.sanitize(query);
-
-        return webClient.post()
-                .uri(chatbotStreamUrl)
-                .header("X-Token", chatbotToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Map.of("query", sanitized))
-                .retrieve()
-                .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
-                .filter(sse -> sse.data() != null && !"done".equals(sse.event()))
-                .map(sse -> unwrapJsonString(sse.data()))
-                .doOnError(e -> log.error("챗봇 스트리밍 호출 실패", e));
-    }
-
-    private String unwrapJsonString(String rawData) {
-        try {
-            return objectMapper.readValue(rawData, String.class);
-        } catch (Exception e) {
-            return rawData;
-        }
-    }
-
-    public record ChatRequest(String query) {}
     public record ChatResponse(String answer) {}
 }
