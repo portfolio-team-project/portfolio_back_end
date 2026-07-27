@@ -61,7 +61,7 @@ public class chatbotUtil {
                 .build();
 
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofMinutes(5))
+                .responseTimeout(Duration.ofMinutes(30))
                 .keepAlive(false);
 
         this.webClient = webClientBuilder
