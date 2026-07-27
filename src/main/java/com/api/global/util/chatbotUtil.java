@@ -48,7 +48,7 @@ public class chatbotUtil {
         this.restTemplate = builder
                 .requestFactory(SimpleClientHttpRequestFactory::new)
                 .connectTimeout(Duration.ofSeconds(5))
-                .readTimeout(Duration.ofSeconds(180))
+                .readTimeout(Duration.ofMinutes(10))
                 .additionalInterceptors((request, body, execution) -> {
                     log.info("=== OUTGOING REQUEST ===");
                     log.info("URI: {}", request.getURI());
@@ -61,7 +61,7 @@ public class chatbotUtil {
                 .build();
 
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofMinutes(30))
+                .responseTimeout(Duration.ofMinutes(10))
                 .keepAlive(false);
 
         this.webClient = webClientBuilder
@@ -69,7 +69,6 @@ public class chatbotUtil {
                 .build();
 
         this.objectMapper = objectMapper;
-        this.chatbotStreamUrl = chatbotStreamUrl;
     }
 
     public String ask(String query) {

@@ -1,5 +1,8 @@
 package com.api.domain.chatbot.controller;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.http.ResponseEntity;
@@ -13,10 +16,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.api.global.common.ApiResponse;
 import com.api.global.exception.BusinessException;
-import com.api.global.exception.GlobalExceptionHandler;
 import com.api.global.util.chatbotUtil;
 
-import io.jsonwebtoken.io.IOException;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,26 +53,35 @@ public class chatbotController {
 	@GetMapping("/chatbot/stream")
     public SseEmitter memberDataLoadStream(@RequestParam(required = false) String content) {
 
-        if (content == null || content.isBlank()) {
+		if (content == null || content.isBlank()) {
             throw new BusinessException("내용은 필수 값입니다.");
         }
 
-        SseEmitter emitter = new SseEmitter(TimeUnit.MINUTES.toMillis(5));
+        SseEmitter emitter = new SseEmitter(TimeUnit.MINUTES.toMillis(10));
 
-        chatbotutil.askStream(content)
-                .subscribe(
-                        piece -> {
-                            try {
-                                emitter.send(piece);
-                            } catch (IOException e) {
-                                emitter.complete();
-                            } catch (Exception e) {
-                                emitter.completeWithError(e);
-                            }
-                        },
-                        emitter::completeWithError,
-                        emitter::complete
-                );
+        ScheduledExecutorService heartbeatExecutor = Executors.newSingleThreadScheduledExecutor();
+        heartbeatExecutor.scheduleAtFixedRate(() -> {
+            try {
+                emitter.send(SseEmitter.event().comment("heartbeat"));
+            } catch (Exception e) {
+                heartbeatExecutor.shutdown();
+            }
+        }, 10, 10, TimeUnit.SECONDS);
+
+        CompletableFuture.supplyAsync(() -> chatbotutil.ask(content))
+                .whenComplete((answer, error) -> {
+                    heartbeatExecutor.shutdown();
+                    try {
+                        if (error != null) {
+                            emitter.completeWithError(error);
+                        } else {
+                            emitter.send(answer);
+                            emitter.complete();
+                        }
+                    } catch (IOException e) {
+                        emitter.completeWithError(e);
+                    }
+                });
 
         return emitter;
     }
