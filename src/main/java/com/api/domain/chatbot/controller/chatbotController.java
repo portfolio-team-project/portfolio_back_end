@@ -1,5 +1,7 @@
 package com.api.domain.chatbot.controller;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.api.global.common.ApiResponse;
 import com.api.global.exception.BusinessException;
@@ -43,4 +46,29 @@ public class chatbotController {
 		
 		return ResponseEntity.ok(ApiResponse.ok(answer));
 	}
+	
+	@GetMapping("/chatbot/stream")
+    public SseEmitter memberDataLoadStream(@RequestParam(required = false) String content) {
+
+        if (content == null || content.isBlank()) {
+            throw new BusinessException("내용은 필수 값입니다.");
+        }
+
+        SseEmitter emitter = new SseEmitter(TimeUnit.MINUTES.toMillis(5));
+
+        chatbotutil.askStream(content)
+                .subscribe(
+                        piece -> {
+                            try {
+                                emitter.send(piece);
+                            } catch (Exception e) {
+                                emitter.completeWithError(e);
+                            }
+                        },
+                        emitter::completeWithError,
+                        emitter::complete
+                );
+
+        return emitter;
+    }
 }

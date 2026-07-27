@@ -25,4 +25,5 @@ kakao:
 
 chatbot:
   url: ${CHATBOT_API}
-  token: ${CAHTBOT_API_KEY}
+  token: ${CHATBOT_API_KEY}
+  stream: ${CHATBOT_API_STREAM}
