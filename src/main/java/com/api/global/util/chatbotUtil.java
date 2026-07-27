@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import reactor.netty.http.client.HttpClient;
 
 @Component
 @Slf4j
@@ -58,7 +60,14 @@ public class chatbotUtil {
                 })
                 .build();
 
-        this.webClient = webClientBuilder.build();
+        HttpClient httpClient = HttpClient.create()
+                .responseTimeout(Duration.ofMinutes(5))
+                .keepAlive(false);
+
+        this.webClient = webClientBuilder
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+
         this.objectMapper = objectMapper;
         this.chatbotStreamUrl = chatbotStreamUrl;
     }
@@ -89,10 +98,8 @@ public class chatbotUtil {
                 .bodyValue(Map.of("query", sanitized))
                 .retrieve()
                 .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
-                .doOnNext(sse -> log.info("SSE 수신: data={}", sse.data()))
                 .filter(sse -> sse.data() != null && !"done".equals(sse.event()))
                 .map(sse -> unwrapJsonString(sse.data()))
-                .doOnNext(piece -> log.info("브라우저로 보낼 데이터: {}", piece))
                 .doOnError(e -> log.error("챗봇 스트리밍 호출 실패", e));
     }
 
