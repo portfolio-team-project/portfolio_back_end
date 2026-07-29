@@ -49,9 +49,12 @@ pipeline {
 				            --restart unless-stopped \
 				        	--network host \
 				        	-e SPRING_PROFILES_ACTIVE=prod \
+				        	-e TZ=Asia/Seoul \
 				            --env-file "\$ENV_FILE" \
 				            -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \
 				            -v /home/ubuntu/docker_srv/was_home/upload:/upload \
+				            -v /etc/localtime:/etc/localtime:ro \
+        					-v /etc/timezone:/etc/timezone:ro \
 				            --name \$CONTAINER_NAME \
 				            \$IMAGE_NAME:latest
 				    """
@@ -117,9 +120,12 @@ pipeline {
 			                --restart unless-stopped \\
 			                --network host \\
 			                -e SPRING_PROFILES_ACTIVE=prod \\
+			                -e TZ=Asia/Seoul \\
 			                --env-file \$ENV_FILE \\
 			                -v /home/ubuntu/docker_srv/was_home/logs:/var/was_home/logs \\
 			                -v /home/ubuntu/docker_srv/was_home/upload:/upload \\
+			                -v /etc/localtime:/etc/localtime:ro \\
+        					-v /etc/timezone:/etc/timezone:ro \\
 			                --name \$CONTAINER_NAME \\
 			                \$IMAGE_NAME:latest
 			
