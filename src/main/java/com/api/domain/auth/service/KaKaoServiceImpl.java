@@ -7,6 +7,7 @@ import com.api.domain.base.Member.repository.MemberRepository;
 import com.api.global.config.KaKaoProperties;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
+import com.api.global.redis.RedisService;
 import com.api.global.util.HashUtil;
 
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ public class KaKaoServiceImpl implements KaKaoService{
     
     private final KaKaoProperties kakaoProperties;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
     private final RestTemplate restTemplate;
     private final HashUtil hashUtil;
 
@@ -41,11 +43,13 @@ public class KaKaoServiceImpl implements KaKaoService{
         
         String kakaoIdEnc = hashUtil.hash(kakaoId);
         
-        //db 내 카카오 아이디 조회 ( 없을 시 에러 반환 )
         MemberEntity member = memberRepository.findByKakaoId(kakaoIdEnc)
-                .orElseThrow(() -> new BusinessException( MessageConstants.MEMBER_NOT_FOUND,
-                                                          Map.of("kakaoId", kakaoId)
-                                                         ));
+                .orElseThrow(() -> {
+                    redisService.saveKakaoVerified(kakaoIdEnc);
+                    return new BusinessException(MessageConstants.MEMBER_NOT_FOUND,
+                                                  Map.of("kakaoId", kakaoId));
+                });
+
         
         return member;
     }

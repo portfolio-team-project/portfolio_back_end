@@ -41,6 +41,7 @@ public class MessageConstants {
     public static final String REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
     public static final String REFRESH_TOKEN_INVALID = "invalid refresh token";
     public static final String REFRESH_TOKEN_MISMATCH = "refresh token mismatch";
+    public static final String KAKAO_NOT_VERIFIED="카카오 인증이 완료되지 않았습니다.";
     
     //qna
     public static final String SEQ_NOT_FOUND = "QNA 정보를 찾을 수 없습니다.";

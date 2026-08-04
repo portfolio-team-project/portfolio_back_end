@@ -79,6 +79,10 @@ public class LoginServiceImpl implements LoginService{
         
         // kakaoId 암호화
         String kakaoIdEnc = hashUtil.hash(request.getKakaoId());
+        
+        if (!redisService.getKakaoVerified(kakaoIdEnc)) {
+		    throw new BusinessException(MessageConstants.KAKAO_NOT_VERIFIED);
+		}
 
         // 4. UUID 생성 — JWT 및 Redis 키에서 회원을 식별하는 값
         String uuid = UUID.randomUUID().toString();
@@ -127,6 +131,7 @@ public class LoginServiceImpl implements LoginService{
 
         // 8. 인증 완료 키 삭제 (같은 이메일로 재가입 시도 방지)
         redisService.deleteSignupVerified(request.getEmail());
+        redisService.deleteKakaoVerified(kakaoIdEnc);
         
         return member;
 	}

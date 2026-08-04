@@ -164,5 +164,25 @@ public class RedisService {
 	    redisTemplate.delete("CHAT_STATUS:" + jobId);
 	    redisTemplate.delete("CHAT_ANSWER:" + jobId);
 	}
+	/*
+	 * 카카오 로그인 임시 저장
+	 * */
+	public void saveKakaoVerified(String kakaoIdEnc) {
+	    redisTemplate.opsForValue().set("KAKAO_VERIFIED:" + kakaoIdEnc, "true", 5, TimeUnit.MINUTES);
+	}
+	
+	/*
+	 * 카카오 로그인 임시 검증 확인
+	 * */
+	public boolean getKakaoVerified(String kakaoIdEnc) {
+	    return "true".equals(redisTemplate.opsForValue().get("KAKAO_VERIFIED:" + kakaoIdEnc));
+	}
+	
+	/*
+	 * 카카오 로그인 임시 검증 삭제
+	 * */
+	public void deleteKakaoVerified(String kakaoIdEnc) {
+	    redisTemplate.delete("KAKAO_VERIFIED:" + kakaoIdEnc);
+	}
 
 }
