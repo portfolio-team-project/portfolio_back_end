@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class WithdrawLogServiceImpl implements WithdrawLogService {
 	
-	private WithdrawLogRepository withdrawLogRepository;
+	private final WithdrawLogRepository withdrawLogRepository;
 
 	@Override
 	public boolean isRecentlyWithdrawn(String userId, LocalDateTime after) {

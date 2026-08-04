@@ -41,11 +41,8 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String checkUserId(String userId) {
 		
-		if (memberRepository.existsById(userId)) {
-	        return "DUPLICATED";
-	    }
-	    if (withdrawLogRepository.existsByUserIdAndDeleteDtAfter(userId, LocalDateTime.now().minusDays(7))) {
-	        return "WITHDRAWN";
+		if (memberRepository.existsById(userId) || withdrawLogRepository.existsByUserIdAndDeleteDtAfter(userId, LocalDateTime.now().minusDays(7))) {
+	        return "UNAVAILABLE";
 	    }
 	    
 	    return "AVAILABLE";
