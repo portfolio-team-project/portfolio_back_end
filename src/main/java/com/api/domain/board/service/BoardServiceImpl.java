@@ -21,7 +21,9 @@ import com.api.domain.board.dto.BoardDetailResponse;
 import com.api.domain.board.dto.BoardListResponse;
 import com.api.domain.board.dto.BoardPageResponse;
 import com.api.domain.board.dto.BoardRequest;
+import com.api.domain.board.entity.BoardCommentEntity;
 import com.api.domain.board.entity.BoardEntity;
+import com.api.domain.board.repository.BoardCommentRepository;
 import com.api.domain.board.repository.BoardRepository;
 import com.api.global.util.HtmlSanitizer;
 
@@ -35,6 +37,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final MemberService memberService;
     private final BoardRepository boardRepository;
+    private final BoardCommentRepository boardCommentRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -45,7 +48,7 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(BoardEntity.builder()
                 .title(HtmlSanitizer.sanitize(boardRequest.getTitle()))
                 .content(HtmlSanitizer.sanitize(boardRequest.getContent()))
-                .userId(member.getUserId())
+                .member(member)
                 .noticeYn(isAdmin ? "Y" : "N")
                 .build());
     }
@@ -85,7 +88,7 @@ public class BoardServiceImpl implements BoardService {
         BoardEntity board = boardRepository.findById(localId)
                 .orElseThrow(() -> new BusinessException("게시글을 찾을 수 없습니다."));
         MemberEntity member = memberService.findByUuid(uuid);
-        if (!board.getUserId().equals(member.getUserId())) {
+        if (board.getMember() == null || !board.getMember().getUserId().equals(member.getUserId())) {
             throw new BusinessException("수정 권한이 없습니다.");
         }
         board.update(
@@ -97,12 +100,12 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardDetailResponse getBoardDetail(Long localId) {
-        BoardEntity board = boardRepository.findById(localId)
+        BoardEntity board = boardRepository.findById(localId).filter(b -> "N".equals(b.getDelYn()))
                 .orElseThrow(() -> new BusinessException("게시글을 찾을 수 없습니다."));
         board.increaseViewCnt();
         return BoardDetailResponse.builder()
                 .localId(board.getLocalId())
-                .userId(board.getUserId())
+                .userId(board.getMember() != null ? board.getMember().getUserId() : null)
                 .title(board.getTitle())
                 .content(board.getContent())
                 .createdDate(board.getCreatedDate())
@@ -117,19 +120,23 @@ public class BoardServiceImpl implements BoardService {
         BoardEntity board = boardRepository.findById(localId)
                 .orElseThrow(() -> new BusinessException("게시글을 찾을 수 없습니다."));
         MemberEntity member = memberService.findByUuid(uuid);
-        if (!board.getUserId().equals(member.getUserId())) {
+        if (board.getMember() == null || !board.getMember().getUserId().equals(member.getUserId())) {
             throw new BusinessException("삭제 권한이 없습니다.");
         }
         if (!passwordEncoder.matches(boardDeleteRequest.getPassword(), member.getPassword())) {
             throw new BusinessException("비밀번호가 틀립니다.");
         }
+        
+        List<BoardCommentEntity> comments = boardCommentRepository.findByBoardAndDelYn(board, "N");
+		comments.forEach(BoardCommentEntity::softDelete);
+        
         board.softDelete();
     }
 
     private BoardListResponse toListResponse(BoardEntity b) {
         return BoardListResponse.builder()
                 .localId(b.getLocalId())
-                .userId(b.getUserId())
+                .userId(b.getMember() != null ? b.getMember().getUserId() : null)
                 .title(b.getTitle())
                 .createdDate(b.getCreatedDate())
                 .viewCnt(b.getViewCnt())
@@ -144,5 +151,18 @@ public class BoardServiceImpl implements BoardService {
 		LocalDate ed = LocalDate.now();
 		
 		return boardRepository.countByDelYnAndNoticeYnAndCreatedDateBetween(delYn, noticeYn, st, ed);
+	}
+
+	@Override
+	@Transactional
+	public void adminDeleteBoard(Long localId) {
+		BoardEntity board = boardRepository.findById(localId)
+                .orElseThrow(() -> new BusinessException("게시글을 찾을 수 없습니다."));
+        
+		List<BoardCommentEntity> comments = boardCommentRepository.findByBoardAndDelYn(board, "N");
+		comments.forEach(BoardCommentEntity::softDelete);
+		
+        board.softDelete();
+		
 	}
 }

@@ -15,6 +15,7 @@ import com.api.domain.base.Login.entity.LoginEntity;
 import com.api.domain.base.Login.repository.LoginRepository;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.repository.MemberRepository;
+import com.api.domain.base.Member.service.WithdrawLogService;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
@@ -33,6 +34,7 @@ public class LoginServiceImpl implements LoginService{
     private final MemberRepository memberRepository;
     private final RedisService redisService;
     private final AuthRepository authRepository;
+    private final WithdrawLogService withdrawLogService;
     private final UserAuthRepository userAuthRepository;
     private final HashUtil hashUtil;
 
@@ -59,12 +61,13 @@ public class LoginServiceImpl implements LoginService{
 	public MemberEntity kakaoJoin(KakaoLoginRequest request, HttpServletRequest httpRequest) {
 		
 		// 1. 아이디 중복 확인
-        memberRepository.findById(request.getUserId()).ifPresent(m -> {
-            if ("N".equals(m.getStatus())) {
-                throw new BusinessException(MessageConstants.MEMBER_WITHDRAWN);
-            }
-            throw new BusinessException(MessageConstants.USER_ID_DUPLICATED);
-        });
+		memberRepository.findById(request.getUserId()).ifPresent(m -> {
+		    throw new BusinessException(MessageConstants.USER_ID_DUPLICATED);
+		});
+
+		if (withdrawLogService.isRecentlyWithdrawn(request.getUserId(), LocalDateTime.now().minusDays(7))) {
+		    throw new BusinessException(MessageConstants.USER_ID_DUPLICATED);
+		}
 
         // 2. 이메일 인증 완료 여부 확인 (2단계를 거치지 않으면 가입 불가)
         if (!redisService.getSignupVerified(request.getEmail())) {

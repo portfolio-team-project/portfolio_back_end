@@ -2,8 +2,6 @@ package com.api.domain.base.Member.service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +15,9 @@ import com.api.domain.auth.entity.UserAuthEntity;
 import com.api.domain.auth.repository.UserAuthRepository;
 import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
+import com.api.domain.base.Member.entity.WithdrawLogEntity;
 import com.api.domain.base.Member.repository.MemberRepository;
+import com.api.domain.base.Member.repository.WithdrawLogRepository;
 import com.api.global.constants.MessageConstants;
 import com.api.global.exception.BusinessException;
 import com.api.global.redis.RedisService;
@@ -34,14 +34,21 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final UserAuthRepository userAuthRepository;
+	private final WithdrawLogRepository withdrawLogRepository;
 	private final MailUtil mailUtil;
 	private final RedisService redisService;
 
 	@Override
 	public String checkUserId(String userId) {
-		return memberRepository.findById(userId)
-				.map(m -> "N".equals(m.getStatus()) ? "WITHDRAWN" : "DUPLICATED") // WITHDRAWN: 탈퇴, DUPLICATED: 사용 중
-				.orElse("AVAILABLE"); // AVAILABLE: 사용 가능
+		
+		if (memberRepository.existsById(userId)) {
+	        return "DUPLICATED";
+	    }
+	    if (withdrawLogRepository.existsByUserIdAndDeleteDtAfter(userId, LocalDateTime.now().minusDays(7))) {
+	        return "WITHDRAWN";
+	    }
+	    
+	    return "AVAILABLE";
 	}
 
 	@Override
@@ -186,10 +193,16 @@ public class MemberServiceImpl implements MemberService {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new BusinessException(MessageConstants.PASSWORD_NOT_MATCH);
         }
+        
+        WithdrawLogEntity withdrawLog = WithdrawLogEntity.builder()
+        		                                         .userId(member.getUserId())
+        		                                         .deleteDt(LocalDateTime.now())
+        		                                         .build();
+        
+        withdrawLogRepository.save(withdrawLog);
 
-        member.withdraw();
-        memberRepository.save(member);
-
+        memberRepository.delete(member);
+        
         redisService.deleteRefreshToken(member.getUuid());
     }
 
@@ -235,6 +248,13 @@ public class MemberServiceImpl implements MemberService {
 		MemberEntity member = memberRepository.findByUuid(uuid)
                 .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
 		
+		WithdrawLogEntity withdrawLog = WithdrawLogEntity.builder()
+                .userId(member.getUserId())
+                .deleteDt(LocalDateTime.now())
+                .build();
+
+		withdrawLogRepository.save(withdrawLog);
+		
 		memberRepository.delete(member);
 		
 		redisService.deleteRefreshToken(member.getUuid());
@@ -251,9 +271,15 @@ public class MemberServiceImpl implements MemberService {
 	public void adminWithdraw(String uuid) {
 	    MemberEntity member = memberRepository.findByUuid(uuid)
 	            .orElseThrow(() -> new BusinessException(MessageConstants.MEMBER_NOT_FOUND));
+	    
+	    WithdrawLogEntity withdrawLog = WithdrawLogEntity.builder()
+                .userId(member.getUserId())
+                .deleteDt(LocalDateTime.now())
+                .build();
 
-	    member.withdraw();
-	    memberRepository.save(member);
+	    withdrawLogRepository.save(withdrawLog);
+	    
+	    memberRepository.delete(member);
 
 	    redisService.deleteRefreshToken(member.getUuid());
 	}
