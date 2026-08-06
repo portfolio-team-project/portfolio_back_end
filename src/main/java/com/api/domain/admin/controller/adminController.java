@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.api.domain.base.Member.dto.MemberDetailResponse;
 import com.api.domain.base.Member.dto.MemberResponse;
 import com.api.domain.base.Member.entity.MemberEntity;
 import com.api.domain.base.Member.service.MemberService;
+import com.api.domain.board.dto.BoardDetailResponse;
+import com.api.domain.board.service.BoardService;
 import com.api.domain.qna.dto.QnaDetailResponse;
 import com.api.domain.qna.dto.QnaListResponse;
 import com.api.domain.qna.service.QnaService;
@@ -40,6 +43,7 @@ public class adminController {
 	
 	private final MemberService memberService;
 	private final AdminService adminService;
+	private final BoardService boardService;
 	private final QnaService qnaService;
 	private final MailUtil mailUtil;
 	
@@ -142,4 +146,21 @@ public class adminController {
 		
 		return ResponseEntity.ok(ApiResponse.ok());
 	}
+	
+	@GetMapping("/boardMonthCount")
+	public ResponseEntity<ApiResponse<Long>> boardMonthCount() {
+		
+		Long monthCount = boardService.countThisMonthBoardAll("N", "N");
+		
+		
+		return ResponseEntity.ok(ApiResponse.ok(monthCount));
+	}
+	
+	@PostMapping("/deleteBoard/{localId}")
+	public ResponseEntity<ApiResponse<Void>> deleteBoard(@PathVariable Long localId) {
+		
+		boardService.adminDeleteBoard(localId);
+		
+        return ResponseEntity.ok(ApiResponse.ok());
+    }
 }

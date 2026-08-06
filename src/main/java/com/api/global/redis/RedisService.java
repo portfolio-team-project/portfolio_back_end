@@ -128,5 +128,61 @@ public class RedisService {
 	    }
 	    return count;
 	}
+	
+	/*
+	 * 챗봇 응답 상태 저장
+	 * */
+	public void saveChatStatus(String jobId, String status) {
+	    redisTemplate.opsForValue().set("CHAT_STATUS:" + jobId, status, 10, TimeUnit.MINUTES);
+	}
+
+	/*
+	 * 챗봇 응답 상태 조회
+	 * */
+	public String getChatStatus(String jobId) {
+	    return redisTemplate.opsForValue().get("CHAT_STATUS:" + jobId);
+	}
+
+	/*
+	 * 챗봇 답변 저장
+	 * */
+	public void saveChatAnswer(String jobId, String answer) {
+	    redisTemplate.opsForValue().set("CHAT_ANSWER:" + jobId, answer, 10, TimeUnit.MINUTES);
+	}
+
+	/*
+	 * 챗봇 답변 조회
+	 * */
+	public String getChatAnswer(String jobId) {
+	    return redisTemplate.opsForValue().get("CHAT_ANSWER:" + jobId);
+	}
+
+	/*
+	 * 챗봇 작업 삭제
+	 * */
+	public void deleteChatJob(String jobId) {
+	    redisTemplate.delete("CHAT_STATUS:" + jobId);
+	    redisTemplate.delete("CHAT_ANSWER:" + jobId);
+	}
+	/*
+	 * 카카오 로그인 임시 저장
+	 * */
+	public void saveKakaoVerified(String kakaoIdEnc) {
+	    redisTemplate.opsForValue().set("KAKAO_VERIFIED:" + kakaoIdEnc, "true", 5, TimeUnit.MINUTES);
+	}
+	
+	/*
+	 * 카카오 로그인 임시 검증 확인
+	 * */
+	public boolean getKakaoVerified(String kakaoIdEnc) {
+	    return "true".equals(redisTemplate.opsForValue().get("KAKAO_VERIFIED:" + kakaoIdEnc));
+	}
+	
+	/*
+	 * 카카오 로그인 임시 검증 삭제
+	 * */
+	public void deleteKakaoVerified(String kakaoIdEnc) {
+	    redisTemplate.delete("KAKAO_VERIFIED:" + kakaoIdEnc);
+	}
 
 }

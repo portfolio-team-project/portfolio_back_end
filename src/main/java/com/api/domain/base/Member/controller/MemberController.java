@@ -150,5 +150,4 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.ok(memberService.checkUserId(userId)));
 	}
 	
-	// 회원조회
 }

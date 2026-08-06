@@ -108,11 +108,6 @@ public class MemberEntity {
 	    this.tempPwdYn = "N";
 	    this.chgPwdDt = LocalDateTime.now();
 	}
-
-	public void withdraw() {
-	    this.status = "N";
-	    this.updatedDate = LocalDateTime.now();
-	}
 	
 	public void updateTempPwd(String password) {
 		this.tempPwdYn = "Y";

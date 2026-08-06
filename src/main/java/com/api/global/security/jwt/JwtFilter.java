@@ -22,6 +22,11 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 	private final JwtProvider jwtProvider;
 	
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;   // SSE 등 비동기 처리에서도 이 필터가 동작하도록
+    }
+	
 	@Override
     protected void doFilterInternal(
             HttpServletRequest request,

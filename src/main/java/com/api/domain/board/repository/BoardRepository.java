@@ -1,5 +1,6 @@
 package com.api.domain.board.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -19,4 +20,5 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
 
     Page<BoardEntity> findByNoticeYnAndDelYn(String noticeYn, String delYn, Pageable pageable);
     Page<BoardEntity> findByNoticeYnAndDelYnAndTitleContaining(String noticeYn, String delYn, String title, Pageable pageable);
+    long countByDelYnAndNoticeYnAndCreatedDateBetween(String delYn, String noticeYn ,LocalDate start, LocalDate end);
 }
