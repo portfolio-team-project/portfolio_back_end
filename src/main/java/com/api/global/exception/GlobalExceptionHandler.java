@@ -69,7 +69,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleBusiness(BusinessException e) {
         boolean isLocked = MessageConstants.PWD_CHG_LOCKED.equals(e.getMessage()) ||
                            MessageConstants.PWD_CHG_LOCKED_EXPIRED.equals(e.getMessage());
-        HttpStatus status = isLocked ? HttpStatus.LOCKED : HttpStatus.BAD_REQUEST;
+        boolean isTooMany = MessageConstants.UPLOAD_LIMIT_EXCEEDED.equals(e.getMessage());
+
+        HttpStatus status = isLocked ? HttpStatus.LOCKED
+                           : isTooMany ? HttpStatus.TOO_MANY_REQUESTS
+                           : HttpStatus.BAD_REQUEST;
+
         return ResponseEntity
                 .status(status)
                 .body(new ApiResponse<>(false, e.getMessage(), e.getData()));

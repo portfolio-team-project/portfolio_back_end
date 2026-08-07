@@ -25,7 +25,11 @@ import com.api.domain.qna.dto.QnaMemberRequest;
 import com.api.domain.qna.dto.QnaRequest;
 import com.api.domain.qna.service.QnaService;
 import com.api.global.common.ApiResponse;
+import com.api.global.constants.MessageConstants;
+import com.api.global.exception.BusinessException;
+import com.api.global.redis.RedisService;
 import com.api.global.util.FileUtil;
+import com.api.global.util.HttpUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,6 +42,7 @@ public class QnaController {
 	
 	private final QnaService qnaService;
 	private final FileUtil fileUtil;
+	private final RedisService redisService;
 	
 	// 게스트 qna 삽입
 	@PostMapping("/guest")
@@ -80,7 +85,13 @@ public class QnaController {
 	}
 	
 	@PostMapping("/uploadImg")
-	public ResponseEntity<ApiResponse<Map<String, String>>> uploadimage(@RequestParam("image") MultipartFile file) {
+	public ResponseEntity<ApiResponse<Map<String, String>>> uploadimage(@RequestParam("image") MultipartFile file,
+			                                                            HttpServletRequest request) {
+		
+		String clientIp = HttpUtil.getClientIp(request);
+        if (redisService.incrementUploadCount(clientIp) > 20) {
+            throw new BusinessException(MessageConstants.UPLOAD_LIMIT_EXCEEDED);
+        }
 		
 		String filePath = fileUtil.fileUpload(file, "image");
 		

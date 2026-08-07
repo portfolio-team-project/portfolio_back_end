@@ -184,5 +184,16 @@ public class RedisService {
 	public void deleteKakaoVerified(String kakaoIdEnc) {
 	    redisTemplate.delete("KAKAO_VERIFIED:" + kakaoIdEnc);
 	}
+	
+	/*
+	 * 이미지 업로드 횟수 제한 (IP 기준, 익명 업로드 남용 방지)
+	 * */
+	public long incrementUploadCount(String ip) {
+	    Long count = redisTemplate.opsForValue().increment("UPLOAD_LIMIT:" + ip);
+	    if (count != null && count == 1) {
+	        redisTemplate.expire("UPLOAD_LIMIT:" + ip, 1, TimeUnit.HOURS);
+	    }
+	    return count == null ? 0 : count;
+	}
 
 }

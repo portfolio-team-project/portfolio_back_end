@@ -51,4 +51,6 @@ public class MessageConstants {
     //이미지 전송
     public static final String FILE_UPLOAD_FAILED = "이미지 업로드에 실패하였습니다.";
     public static final String INVALID_FILE_TYPE = "유효하지 않은 파일 타입입니다.";
+    public static final String UPLOAD_LIMIT_EXCEEDED = "업로드 횟수 제한을 초과했습니다. 잠시 후 다시 시도해주세요.";
+
 }
